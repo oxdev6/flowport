@@ -96,6 +96,22 @@ program
   });
 
 program
+  .command('node')
+  .description('Start a local Hardhat node on localhost:8545 (Ctrl+C to stop)')
+  .option('--hostname <host>', 'Hostname to bind', '127.0.0.1')
+  .option('--port <port>', 'Port to bind', '8545')
+  .action(async (opts) => {
+    try {
+      const { spawn } = require('child_process');
+      const hh = spawn('npx', ['hardhat', 'node', '--hostname', opts.hostname, '--port', opts.port], { stdio: 'inherit' });
+      hh.on('exit', (code) => process.exit(code ?? 0));
+    } catch (err) {
+      console.error(chalk.red('Failed to start Hardhat node:'), err);
+      process.exit(1);
+    }
+  });
+
+program
   .command('verify')
   .description('Verify deployed contracts on Arbiscan (if enabled)')
   .option('--network <name>', 'Network name', 'arbitrumSepolia')
