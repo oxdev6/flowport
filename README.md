@@ -57,7 +57,7 @@ flowport visualize
 
 ### Milestone 2 — Migration Tool (Scaffold)
 
-- CLI: `arb-migrate` with commands: `init`, `deploy`, `verify`
+- CLI: `arb-migrate` with commands: `init`, `node`, `deploy`, `verify`, `balance`, `test-local`, `auto-deploy`
 - Contracts: example `contracts/Counter.sol`
 - Scripts: `scripts/deploy.js`
 - SDK: `src/sdk` exposes helpers: deploy, balance, records, verify
@@ -70,9 +70,13 @@ arb-migrate init
 arb-migrate deploy --network arbitrumSepolia
 # Or run locally (spawns hardhat localhost; can fork ARB_RPC_URL if provided):
 arb-migrate deploy --local
+# Deploy multiple from config:
+arb-migrate deploy --network arbitrumSepolia --config migration/config.example.json
 # Start a local Hardhat node (separate terminal):
 arb-migrate node --hostname 127.0.0.1 --port 8545
 arb-migrate verify --network arbitrumSepolia --address 0x...
+# Auto-deploy when funds arrive:
+arb-migrate auto-deploy --network arbitrumSepolia --interval 20
 ```
 
 ### Config Schema

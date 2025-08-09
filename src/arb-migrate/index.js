@@ -50,11 +50,18 @@ program
   .description('Compile and deploy contracts to Arbitrum testnet')
   .option('--network <name>', 'Network name in hardhat.config.js', 'arbitrumSepolia')
   .option('--local', 'Deploy to local hardhat node (with optional Arbitrum Sepolia forking)')
+  .option('--config <path>', 'Path to migration config (JSON) to deploy multiple contracts')
   .action(async (opts) => {
     try {
       const { spawn } = require('child_process');
-      const args = ['hardhat', 'run', 'scripts/deploy.js'];
+      const args = ['hardhat', 'run'];
+      if (opts.config) {
+        args.push('scripts/deploy-config.js');
+      } else {
+        args.push('scripts/deploy.js');
+      }
       const env = { ...process.env };
+      if (opts.config) env.FLOWPORT_CONFIG = opts.config;
       if (opts.local) {
         // run against local hardhat network
         env.HARDHAT_NETWORK = 'localhost';
