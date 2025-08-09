@@ -161,6 +161,18 @@ program
     hh.on('exit', (code) => process.exit(code ?? 0));
   });
 
+program
+  .command('auto-deploy')
+  .description('Poll deployer balance and auto-deploy to testnet once funded')
+  .option('--network <name>', 'Network name', 'arbitrumSepolia')
+  .option('--interval <sec>', 'Polling interval seconds', '20')
+  .action(async (opts) => {
+    const { spawn } = require('child_process');
+    const env = { ...process.env, HARDHAT_NETWORK: opts.network, INTERVAL_SEC: String(opts.interval) };
+    const proc = spawn('node', ['scripts/auto-deploy.js'], { stdio: 'inherit', env });
+    proc.on('exit', (code) => process.exit(code ?? 0));
+  });
+
 program.parse(process.argv);
 
 
