@@ -46,25 +46,16 @@ async function main() {
     process.exit(1);
   }
 
-  const counter = await Counter.deploy(initialValue);
-  await counter.waitForDeployment();
+  const { deployContract, saveDeploymentRecord } = require('../src/sdk');
+  const counter = await deployContract(hre, 'Counter', [initialValue]);
   const address = await counter.getAddress();
 
   console.log('Counter deployed at:', address);
 
   // Persist deployment info per-network for testing/verification
   try {
-    const outDir = path.join(process.cwd(), 'migration', 'deployments');
-    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    const outPath = path.join(outDir, `${hre.network.name}-Counter.json`);
     const tx = await counter.deploymentTransaction();
-    const data = {
-      network: hre.network.name,
-      address,
-      txHash: tx?.hash || null,
-      initialValue
-    };
-    fs.writeFileSync(outPath, JSON.stringify(data, null, 2));
+    const outPath = saveDeploymentRecord(hre.network.name, 'Counter', address, tx?.hash || null, { initialValue });
     console.log(`Saved deployment → ${outPath}`);
   } catch (e) {
     console.warn('Warning: failed to write deployment file', e?.message || e);
