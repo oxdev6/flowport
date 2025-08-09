@@ -1,6 +1,7 @@
 require('dotenv').config();
 require('@nomicfoundation/hardhat-ethers');
 require('@nomicfoundation/hardhat-verify');
+require('hardhat-typechain');
 
 const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY } = process.env;
 
@@ -35,6 +36,10 @@ module.exports = {
     apiKey: {
       arbitrumSepolia: ARBISCAN_API_KEY || 'YOUR_ARBISCAN_API_KEY'
     }
+  },
+  typechain: {
+    outDir: 'types',
+    target: 'ethers-v6'
   }
 };
 
