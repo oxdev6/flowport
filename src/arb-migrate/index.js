@@ -61,6 +61,32 @@ program
   });
 
 program
+  .command('balance')
+  .description('Show deployer balance on configured network')
+  .option('--network <name>', 'Network name in hardhat.config.js', 'arbitrumSepolia')
+  .action(async (opts) => {
+    try {
+      const hre = require('hardhat');
+      // Hardhat only reads network via env/cmd flags; spawn a sub-process
+      const { spawn } = require('child_process');
+      const script = `
+        const hre = require('hardhat');
+        (async () => {
+          const [s] = await hre.ethers.getSigners();
+          const addr = await s.getAddress();
+          const bal = await hre.ethers.provider.getBalance(addr);
+          console.log(addr, require('ethers').formatEther(bal));
+        })().catch(e=>{console.error(e); process.exit(1)});
+      `;
+      const node = spawn('node', ['-e', script], { stdio: 'inherit', env: { ...process.env, HARDHAT_NETWORK: opts.network } });
+      node.on('exit', (code) => process.exit(code ?? 0));
+    } catch (err) {
+      console.error(chalk.red('Balance check failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
   .command('verify')
   .description('Verify deployed contracts on Arbiscan (if enabled)')
   .option('--network <name>', 'Network name', 'arbitrumSepolia')
