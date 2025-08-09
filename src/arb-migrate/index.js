@@ -3,6 +3,7 @@ const { Command } = require('commander');
 const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
+const { printEnvReport } = require('../utils/env');
 
 const program = new Command();
 
@@ -53,6 +54,10 @@ program
   .option('--config <path>', 'Path to migration config (JSON) to deploy multiple contracts')
   .action(async (opts) => {
     try {
+      // Validate env early when not local
+      if (!opts.local) {
+        printEnvReport({ requirePrivateKey: true });
+      }
       const { spawn } = require('child_process');
       const args = ['hardhat', 'run'];
       if (opts.config) {

@@ -75,6 +75,8 @@ arb-migrate deploy --network arbitrumSepolia --config migration/config.example.j
 # Start a local Hardhat node (separate terminal):
 arb-migrate node --hostname 127.0.0.1 --port 8545
 arb-migrate verify --network arbitrumSepolia --address 0x...
+# Validate environment:
+node -e "require('./src/utils/env').printEnvReport({requirePrivateKey:true})"
 # Auto-deploy when funds arrive:
 arb-migrate auto-deploy --network arbitrumSepolia --interval 20
 ```
