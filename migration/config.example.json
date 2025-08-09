@@ -1,0 +1,10 @@
+{
+  "contracts": [
+    {
+      "name": "Counter",
+      "path": "contracts/Counter.sol",
+      "args": []
+    }
+  ],
+  "verify": true
+}

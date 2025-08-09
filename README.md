@@ -55,6 +55,20 @@ flowport visualize
 - Milestone 1 Research & Architecture: `docs/milestone-1-research.md`
 - Architecture Diagram (Mermaid): `docs/architecture-diagram.mmd`
 
+### Milestone 2 — Migration Tool (Scaffold)
+
+- CLI: `arb-migrate` with commands: `init`, `deploy`, `verify`
+- Contracts: example `contracts/Counter.sol`
+- Scripts: `scripts/deploy.js`
+- Config: `hardhat.config.js`, `migration/config.example.json`, `.env.example`
+- Usage examples:
+
+```bash
+arb-migrate init
+arb-migrate deploy --network arbitrumSepolia
+arb-migrate verify --network arbitrumSepolia --address 0x...
+```
+
 ### Planned Functionality
 
 - Migrations: robust migration execution, status tracking, dry-runs, and rollback
