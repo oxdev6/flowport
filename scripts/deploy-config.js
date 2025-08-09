@@ -26,6 +26,10 @@ async function main() {
     console.log(`Deployed ${c.name} @ ${address}`);
     console.log(`Saved deployment → ${outPath}`);
 
+    if (process.env.JSON_OUT === '1') {
+      console.log(JSON.stringify({ name: c.name, address, txHash: tx?.hash || null, network, args: c.args || [] }));
+    }
+
     if (cfg.verify && process.env.ARBISCAN_API_KEY) {
       console.log(`Verifying ${c.name} ...`);
       const code = await sdk.verifyContract(network, address, c.args || []);

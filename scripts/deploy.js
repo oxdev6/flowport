@@ -57,6 +57,9 @@ async function main() {
     const tx = await counter.deploymentTransaction();
     const outPath = saveDeploymentRecord(hre.network.name, 'Counter', address, tx?.hash || null, { initialValue });
     console.log(`Saved deployment → ${outPath}`);
+    if (process.env.JSON_OUT === '1') {
+      console.log(JSON.stringify({ name: 'Counter', address, txHash: tx?.hash || null, network: hre.network.name, args: [initialValue] }));
+    }
   } catch (e) {
     console.warn('Warning: failed to write deployment file', e?.message || e);
   }
