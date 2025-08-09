@@ -255,6 +255,17 @@ program
     console.log('Cleaned artifacts, cache, and types');
   });
 
+program
+  .command('migrate-state')
+  .description('Copy state (Counter.value) from L1 to L2 MigratableCounter')
+  .option('--network <name>', 'Target L2 network', 'arbitrumSepolia')
+  .action(async (opts) => {
+    const { spawn } = require('child_process');
+    const env = { ...process.env, HARDHAT_NETWORK: opts.network };
+    const proc = spawn('npx', ['hardhat', 'run', 'scripts/migrate-state.js', '--network', opts.network], { stdio: 'inherit', env });
+    proc.on('exit', (code) => process.exit(code ?? 0));
+  });
+
 program.parse(process.argv);
 
 
