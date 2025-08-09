@@ -79,6 +79,12 @@ arb-migrate verify --network arbitrumSepolia --address 0x...
 node -e "require('./src/utils/env').printEnvReport({requirePrivateKey:true})"
 # Auto-deploy when funds arrive:
 arb-migrate auto-deploy --network arbitrumSepolia --interval 20
+# Plan costs from config:
+arb-migrate plan --network arbitrumSepolia --config migration/config.example.json
+# Validate config against schema:
+arb-migrate validate-config --config migration/config.example.json
+# Verify all from deployment records:
+arb-migrate verify-all --network arbitrumSepolia
 ```
 
 ### Config Schema

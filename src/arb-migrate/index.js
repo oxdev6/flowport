@@ -185,6 +185,42 @@ program
     proc.on('exit', (code) => process.exit(code ?? 0));
   });
 
+program
+  .command('plan')
+  .description('Estimate gas/costs for a config deployment on the selected network')
+  .option('--network <name>', 'Network name', 'arbitrumSepolia')
+  .option('--config <path>', 'Path to migration config JSON', 'migration/config.example.json')
+  .option('--json', 'Output JSON only', false)
+  .action(async (opts) => {
+    const { spawn } = require('child_process');
+    const env = { ...process.env, HARDHAT_NETWORK: opts.network, FLOWPORT_CONFIG: opts.config };
+    if (opts.json) env.JSON_OUT = '1';
+    const proc = spawn('npx', ['hardhat', 'run', 'scripts/plan-config.js', '--network', opts.network], { stdio: 'inherit', env });
+    proc.on('exit', (code) => process.exit(code ?? 0));
+  });
+
+program
+  .command('validate-config')
+  .description('Validate a migration config JSON against the schema')
+  .option('--config <path>', 'Path to migration config JSON', 'migration/config.example.json')
+  .action(async (opts) => {
+    const { spawn } = require('child_process');
+    const env = { ...process.env, FLOWPORT_CONFIG: opts.config };
+    const proc = spawn('node', ['scripts/validate-config.js'], { stdio: 'inherit', env });
+    proc.on('exit', (code) => process.exit(code ?? 0));
+  });
+
+program
+  .command('verify-all')
+  .description('Verify all contracts from deployment records for a network')
+  .option('--network <name>', 'Network name', 'arbitrumSepolia')
+  .action(async (opts) => {
+    const { spawn } = require('child_process');
+    const env = { ...process.env, HARDHAT_NETWORK: opts.network };
+    const proc = spawn('node', ['scripts/verify-all.js'], { stdio: 'inherit', env });
+    proc.on('exit', (code) => process.exit(code ?? 0));
+  });
+
 program.parse(process.argv);
 
 
