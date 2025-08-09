@@ -60,6 +60,7 @@ flowport visualize
 - CLI: `arb-migrate` with commands: `init`, `deploy`, `verify`
 - Contracts: example `contracts/Counter.sol`
 - Scripts: `scripts/deploy.js`
+- SDK: `src/sdk` exposes helpers: deploy, balance, records, verify
 - Config: `hardhat.config.js`, `migration/config.example.json`, `.env.example`
 - Usage examples:
 
@@ -73,6 +74,11 @@ arb-migrate deploy --local
 arb-migrate node --hostname 127.0.0.1 --port 8545
 arb-migrate verify --network arbitrumSepolia --address 0x...
 ```
+
+### Config Schema
+
+- Schema: `migration/config.schema.json`
+- Example: `migration/config.example.json`
 
 ### Planned Functionality
 
