@@ -1,0 +1,26 @@
+{
+  "name": "flowport",
+  "version": "1.0.0",
+  "description": "FlowPort CLI – foundation for migrations and visualization.",
+  "main": "src/index.js",
+  "bin": {
+    "flowport": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "lint": "echo 'No linter configured yet'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "migrations",
+    "visualization"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0"
+  }
+}
