@@ -62,7 +62,7 @@ program
       }
       const { spawn } = require('child_process');
       // Dry-run: use planner instead of real deploy
-      if (opts.dry-run) {
+      if (opts.dryRun) {
         const env = { ...process.env };
         if (opts.config) env.FLOWPORT_CONFIG = opts.config;
         const args = ['hardhat', 'run', 'scripts/plan-config.js'];
