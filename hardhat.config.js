@@ -1,7 +1,7 @@
 require('dotenv').config();
 require('@nomicfoundation/hardhat-ethers');
 require('@nomicfoundation/hardhat-verify');
-require('hardhat-typechain');
+require('@typechain/hardhat');
 
 const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY } = process.env;
 

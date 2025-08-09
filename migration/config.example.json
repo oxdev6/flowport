@@ -3,7 +3,7 @@
     {
       "name": "Counter",
       "path": "contracts/Counter.sol",
-      "args": []
+      "args": [0]
     }
   ],
   "verify": true

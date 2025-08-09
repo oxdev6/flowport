@@ -22,11 +22,13 @@
   "type": "commonjs",
   "dependencies": {
     "chalk": "^4.1.2",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "ajv": "^8.17.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@nomicfoundation/hardhat-verify": "^2.0.8",
+    "@typechain/hardhat": "^9.1.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
     "hardhat": "^2.22.5",
