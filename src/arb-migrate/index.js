@@ -49,10 +49,19 @@ program
   .command('deploy')
   .description('Compile and deploy contracts to Arbitrum testnet')
   .option('--network <name>', 'Network name in hardhat.config.js', 'arbitrumSepolia')
+  .option('--local', 'Deploy to local hardhat node (with optional Arbitrum Sepolia forking)')
   .action(async (opts) => {
     try {
       const { spawn } = require('child_process');
-      const hh = spawn('npx', ['hardhat', 'run', 'scripts/deploy.js', '--network', opts.network], { stdio: 'inherit' });
+      const args = ['hardhat', 'run', 'scripts/deploy.js'];
+      const env = { ...process.env };
+      if (opts.local) {
+        // run against local hardhat network
+        env.HARDHAT_NETWORK = 'localhost';
+      } else {
+        args.push('--network', opts.network);
+      }
+      const hh = spawn('npx', args, { stdio: 'inherit', env });
       hh.on('exit', (code) => process.exit(code ?? 0));
     } catch (err) {
       console.error(chalk.red('Deployment failed:'), err);

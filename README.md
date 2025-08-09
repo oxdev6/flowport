@@ -65,7 +65,10 @@ flowport visualize
 
 ```bash
 arb-migrate init
+# Deploy to Arbitrum Sepolia (requires funded PRIVATE_KEY):
 arb-migrate deploy --network arbitrumSepolia
+# Or run locally (spawns hardhat localhost; can fork ARB_RPC_URL if provided):
+arb-migrate deploy --local
 arb-migrate verify --network arbitrumSepolia --address 0x...
 ```
 
