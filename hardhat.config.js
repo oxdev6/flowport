@@ -11,6 +11,17 @@ module.exports = {
     settings: { optimizer: { enabled: true, runs: 200 } }
   },
   networks: {
+    hardhat: {
+      forking: ARB_RPC_URL
+        ? {
+            url: ARB_RPC_URL,
+            chainId: 421614
+          }
+        : undefined
+    },
+    localhost: {
+      url: 'http://127.0.0.1:8545'
+    },
     sepolia: {
       url: ETH_RPC_URL || 'https://sepolia.infura.io/v3/YOUR_KEY',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
