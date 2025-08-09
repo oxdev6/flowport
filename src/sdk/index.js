@@ -18,8 +18,12 @@ async function deployContract(hre, contractName, constructorArgs) {
   return contract;
 }
 
+function getDeploymentsDir() {
+  return process.env.DEPLOYMENTS_DIR || path.join(process.cwd(), 'migration', 'deployments');
+}
+
 function saveDeploymentRecord(networkName, contractName, address, txHash, extras = {}) {
-  const outDir = path.join(process.cwd(), 'migration', 'deployments');
+  const outDir = getDeploymentsDir();
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
   const outPath = path.join(outDir, `${networkName}-${contractName}.json`);
   const data = { network: networkName, contract: contractName, address, txHash, ...extras };
@@ -28,7 +32,7 @@ function saveDeploymentRecord(networkName, contractName, address, txHash, extras
 }
 
 function loadDeploymentRecord(networkName, contractName) {
-  const inPath = path.join(process.cwd(), 'migration', 'deployments', `${networkName}-${contractName}.json`);
+  const inPath = path.join(getDeploymentsDir(), `${networkName}-${contractName}.json`);
   if (!fs.existsSync(inPath)) return null;
   return JSON.parse(fs.readFileSync(inPath, 'utf8'));
 }
