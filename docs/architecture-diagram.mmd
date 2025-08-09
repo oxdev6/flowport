@@ -1,0 +1,14 @@
+flowchart TD
+  A["User/Dev inputs migration plan\n(contracts, state rules)"] --> B["Migration Engine\n(Node.js/TS, Ethers, Arbitrum SDK)"]
+  B --> C["Arbitrum Node\n(RPC/WebSocket)"]
+  B --> D["L1<->L2 Messaging\n(retryable tickets)"]
+  C --> E["Data Indexer\n(Node.js, WS + polling)"]
+  E --> F["PostgreSQL\n(transactions, logs, runs)"]
+  E --> G["Redis\n(job queue)"]
+  F --> H["Visualization Backend\n(Next.js API)"]
+  G --> H
+  H --> I["Explorer UI\n(Next.js/React)"]
+  D --> E
+  B --> F
+
+

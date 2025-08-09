@@ -1,6 +1,6 @@
-## FlowPort CLI (Milestone 1)
+## FlowPort
 
-FlowPort is a CLI designed to power database/application migrations and system visualization. Milestone 1 establishes the CLI skeleton with placeholder commands and developer setup.
+FlowPort is a toolchain for chain migrations and visualization. The CLI skeleton exists for future milestones, while Milestone 1 focuses on research and architecture design for Ethereum → Arbitrum migrations and the visualization system.
 
 ### Installation
 
@@ -50,16 +50,16 @@ flowport visualize
 # Visualization command placeholder - coming soon!
 ```
 
+### Documentation
+
+- Milestone 1 Research & Architecture: `docs/milestone-1-research.md`
+- Architecture Diagram (Mermaid): `docs/architecture-diagram.mmd`
+
 ### Planned Functionality
 
-- Migrations: robust migration execution, status tracking, dry-runs, and rollback.
-- Visualization: generate visual maps/graphs of data flows and dependencies.
-- Config: project-level configuration for targets, environments, and outputs.
-
-### Development
-
-- Entry point: `src/index.js`
-- Commands will be organized under `src/commands/` in future milestones.
+- Migrations: robust migration execution, status tracking, dry-runs, and rollback
+- Visualization: generate visual maps/graphs of data flows and dependencies
+- Config: project-level configuration for targets, environments, and outputs
 
 ### License
 
