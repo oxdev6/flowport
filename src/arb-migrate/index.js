@@ -112,6 +112,42 @@ program
   });
 
 program
+  .command('test-local')
+  .description('Attach to the latest local deployment of Counter and test increment')
+  .action(async () => {
+    try {
+      const { spawn } = require('child_process');
+      const script = `
+        const fs = require('fs');
+        const path = require('path');
+        const hre = require('hardhat');
+        (async () => {
+          const deploymentsDir = path.join(process.cwd(), 'migration', 'deployments');
+          const file = path.join(deploymentsDir, 'localhost-Counter.json');
+          if (!fs.existsSync(file)) {
+            console.error('No local deployment record found. Run: arb-migrate deploy --local');
+            process.exit(1);
+          }
+          const { address } = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const Counter = await hre.ethers.getContractFactory('Counter');
+          const c = await Counter.attach(address);
+          const before = await c.value();
+          const tx = await c.increment(1);
+          await tx.wait();
+          const after = await c.value();
+          console.log('OK: value ' + before.toString() + ' -> ' + after.toString() + ' @ ' + address);
+        })().catch((e)=>{ console.error(e); process.exit(1); });
+      `;
+      const env = { ...process.env, HARDHAT_NETWORK: 'localhost' };
+      const node = spawn('node', ['-e', script], { stdio: 'inherit', env });
+      node.on('exit', (code) => process.exit(code ?? 0));
+    } catch (err) {
+      console.error(chalk.red('Local test failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
   .command('verify')
   .description('Verify deployed contracts on Arbiscan (if enabled)')
   .option('--network <name>', 'Network name', 'arbitrumSepolia')
