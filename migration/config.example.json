@@ -4,6 +4,11 @@
       "name": "Counter",
       "path": "contracts/Counter.sol",
       "args": [0]
+    },
+    {
+      "name": "MigratableCounter",
+      "path": "contracts/MigratableCounter.sol",
+      "args": [0]
     }
   ],
   "verify": true
