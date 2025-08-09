@@ -69,6 +69,8 @@ arb-migrate init
 arb-migrate deploy --network arbitrumSepolia
 # Or run locally (spawns hardhat localhost; can fork ARB_RPC_URL if provided):
 arb-migrate deploy --local
+# Start a local Hardhat node (separate terminal):
+arb-migrate node --hostname 127.0.0.1 --port 8545
 arb-migrate verify --network arbitrumSepolia --address 0x...
 ```
 
