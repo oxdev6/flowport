@@ -52,6 +52,8 @@ program
   .option('--network <name>', 'Network name in hardhat.config.js', 'arbitrumSepolia')
   .option('--local', 'Deploy to local hardhat node (with optional Arbitrum Sepolia forking)')
   .option('--config <path>', 'Path to migration config (JSON) to deploy multiple contracts')
+  .option('--dry-run', 'Do not send transactions; estimate gas/costs only')
+  .option('--json', 'Output JSON with deployed address/tx (when not dry-run)')
   .action(async (opts) => {
     try {
       // Validate env early when not local
@@ -59,6 +61,16 @@ program
         printEnvReport({ requirePrivateKey: true });
       }
       const { spawn } = require('child_process');
+      // Dry-run: use planner instead of real deploy
+      if (opts.dry-run) {
+        const env = { ...process.env };
+        if (opts.config) env.FLOWPORT_CONFIG = opts.config;
+        const args = ['hardhat', 'run', 'scripts/plan-config.js'];
+        if (!opts.local) args.push('--network', opts.network);
+        const hh = spawn('npx', args, { stdio: 'inherit', env });
+        hh.on('exit', (code) => process.exit(code ?? 0));
+        return;
+      }
       const args = ['hardhat', 'run'];
       if (opts.config) {
         args.push('scripts/deploy-config.js');
@@ -67,6 +79,7 @@ program
       }
       const env = { ...process.env };
       if (opts.config) env.FLOWPORT_CONFIG = opts.config;
+      if (opts.json) env.JSON_OUT = '1';
       if (opts.local) {
         // run against local hardhat network
         env.HARDHAT_NETWORK = 'localhost';
@@ -219,6 +232,27 @@ program
     const env = { ...process.env, HARDHAT_NETWORK: opts.network };
     const proc = spawn('node', ['scripts/verify-all.js'], { stdio: 'inherit', env });
     proc.on('exit', (code) => process.exit(code ?? 0));
+  });
+
+program
+  .command('env-check')
+  .description('Validate required environment variables (.env) and print hints')
+  .option('--require-key', 'Require PRIVATE_KEY to be present and valid', false)
+  .action((opts) => {
+    const ok = printEnvReport({ requirePrivateKey: Boolean(opts.requireKey) });
+    process.exit(ok ? 0 : 1);
+  });
+
+program
+  .command('clean')
+  .description('Clean build artifacts, cache, and generated types')
+  .action(() => {
+    const { rmSync } = require('fs');
+    const toDelete = ['artifacts', 'cache', 'types'];
+    for (const p of toDelete) {
+      try { rmSync(require('path').join(process.cwd(), p), { recursive: true, force: true }); } catch {}
+    }
+    console.log('Cleaned artifacts, cache, and types');
   });
 
 program.parse(process.argv);
