@@ -1,0 +1,5 @@
+(await c.value()).toString()
+await c.increment(5)
+(await c.value()).toString()
+const c = await Counter.attach("0x1459213733F023b55444487eE9385A8266FD0F08")
+const Counter = await ethers.getContractFactory("Counter")
