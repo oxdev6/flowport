@@ -90,6 +90,8 @@ arb-migrate replay --from 0x06395a32ba4c6a468D35E451cbf93b0f07da902b --blocks 10
 arb-migrate replay --from 0x06395a32ba4c6a468D35E451cbf93b0f07da902b --blocks 5 --json
 # Test replay locally (no external RPC required):
 arb-migrate replay --local --json
+# Start the web dashboard:
+arb-migrate dashboard --port 3000
 ```
 
 ### Config Schema
@@ -102,6 +104,22 @@ arb-migrate replay --local --json
 - Migrations: robust migration execution, status tracking, dry-runs, and rollback
 - Visualization: generate visual maps/graphs of data flows and dependencies
 - Config: project-level configuration for targets, environments, and outputs
+
+### Web Dashboard
+
+The FlowPort dashboard provides a visual interface for monitoring migration results:
+
+- **Migration Stats**: Overview of deployments, replays, gas usage, and success rates
+- **Transaction Charts**: Visual representation of gas usage over time
+- **Deployment Table**: Detailed view of all contract deployments with links to Arbiscan
+- **Replay Results**: Status and details of transaction replay operations
+
+Access the dashboard by running:
+```bash
+arb-migrate dashboard --port 3000
+```
+
+Then open http://localhost:3000 in your browser.
 
 ### License
 
