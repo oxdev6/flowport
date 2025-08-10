@@ -266,6 +266,41 @@ program
     proc.on('exit', (code) => process.exit(code ?? 0));
   });
 
+program
+  .command('replay')
+  .description('Replay transactions from Sepolia to Arbitrum Sepolia')
+  .option('--from <address>', 'Source address to replay transactions from', '0x06395a32ba4c6a468D35E451cbf93b0f07da902b')
+  .option('--blocks <number>', 'Number of blocks to replay (default: 10)', '10')
+  .option('--start-block <number>', 'Starting block number (default: latest - blocks)')
+  .option('--json', 'Output results in JSON format')
+  .option('--dry-run', 'Simulate replay without sending transactions')
+  .option('--local', 'Test replay functionality locally (no external RPC required)')
+  .action(async (opts) => {
+    try {
+      const { spawn } = require('child_process');
+      const env = { 
+        ...process.env, 
+        REPLAY_FROM_ADDRESS: opts.from,
+        REPLAY_BLOCKS: opts.blocks,
+        REPLAY_START_BLOCK: opts.startBlock || '',
+        REPLAY_DRY_RUN: opts.dryRun ? '1' : '0',
+        REPLAY_JSON_OUT: opts.json ? '1' : '0'
+      };
+      
+      let script = 'scripts/replay-transactions.js';
+      if (opts.local) {
+        script = 'scripts/test-replay-local.js';
+        env.HARDHAT_NETWORK = 'localhost';
+      }
+      
+      const proc = spawn('npx', ['hardhat', 'run', script], { stdio: 'inherit', env });
+      proc.on('exit', (code) => process.exit(code ?? 0));
+    } catch (err) {
+      console.error(chalk.red('Replay failed:'), err);
+      process.exit(1);
+    }
+  });
+
 program.parse(process.argv);
 
 

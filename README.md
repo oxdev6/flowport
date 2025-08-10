@@ -85,6 +85,11 @@ arb-migrate plan --network arbitrumSepolia --config migration/config.example.jso
 arb-migrate validate-config --config migration/config.example.json
 # Verify all from deployment records:
 arb-migrate verify-all --network arbitrumSepolia
+# Replay transactions from Sepolia to Arbitrum Sepolia:
+arb-migrate replay --from 0x06395a32ba4c6a468D35E451cbf93b0f07da902b --blocks 10 --dry-run
+arb-migrate replay --from 0x06395a32ba4c6a468D35E451cbf93b0f07da902b --blocks 5 --json
+# Test replay locally (no external RPC required):
+arb-migrate replay --local --json
 ```
 
 ### Config Schema
