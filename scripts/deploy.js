@@ -1,6 +1,6 @@
-const hre = require('hardhat');
-const fs = require('fs');
-const path = require('path');
+import hre from 'hardhat';
+import fs from 'fs';
+import path from 'path';
 
 async function main() {
   const initialValue = Number(process.env.COUNTER_INITIAL || 0);
@@ -46,7 +46,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { deployContract, saveDeploymentRecord } = require('../src/sdk');
+  const { deployContract, saveDeploymentRecord } = await import('../src/sdk/index.js');
   const counter = await deployContract(hre, 'Counter', [initialValue]);
   const address = await counter.getAddress();
 
@@ -55,7 +55,7 @@ async function main() {
   // Persist deployment info per-network for testing/verification
   try {
     const tx = await counter.deploymentTransaction();
-    const outPath = saveDeploymentRecord(hre.network.name, 'Counter', address, tx?.hash || null, { initialValue });
+    const outPath = await saveDeploymentRecord('Counter', address, hre.network.name, tx?.gasLimit || 0, tx?.hash || null);
     console.log(`Saved deployment → ${outPath}`);
     if (process.env.JSON_OUT === '1') {
       console.log(JSON.stringify({ name: 'Counter', address, txHash: tx?.hash || null, network: hre.network.name, args: [initialValue] }));

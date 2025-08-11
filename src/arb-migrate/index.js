@@ -1,9 +1,14 @@
 #!/usr/bin/env node
-const { Command } = require('commander');
-const path = require('path');
-const fs = require('fs');
-const chalk = require('chalk');
-const { printEnvReport } = require('../utils/env');
+import { Command } from 'commander';
+import path from 'path';
+import fs from 'fs';
+import chalk from 'chalk';
+import { printEnvReport } from '../utils/env.js';
+import { spawn } from 'child_process';
+import { rmSync } from 'fs';
+import { analyzeContract } from './commands/analyze.js';
+import { optimizeContract } from './commands/optimize.js';
+import { benchmarkContract } from './commands/benchmark.js';
 
 const program = new Command();
 
@@ -60,11 +65,10 @@ program
       if (!opts.local) {
         printEnvReport({ requirePrivateKey: true });
       }
-      const { spawn } = require('child_process');
       // Dry-run: use planner instead of real deploy
       if (opts.dryRun) {
         const env = { ...process.env };
-        if (opts.config) env.FLOWPORT_CONFIG = opts.config;
+        if (opts.config) env.ARB_MIGRATE_CONFIG = opts.config;
         const args = ['hardhat', 'run', 'scripts/plan-config.js'];
         if (!opts.local) args.push('--network', opts.network);
         const hh = spawn('npx', args, { stdio: 'inherit', env });
@@ -78,7 +82,7 @@ program
         args.push('scripts/deploy.js');
       }
       const env = { ...process.env };
-      if (opts.config) env.FLOWPORT_CONFIG = opts.config;
+      if (opts.config) env.ARB_MIGRATE_CONFIG = opts.config;
       if (opts.json) env.JSON_OUT = '1';
       if (opts.local) {
         // run against local hardhat network
@@ -100,16 +104,15 @@ program
   .option('--network <name>', 'Network name in hardhat.config.js', 'arbitrumSepolia')
   .action(async (opts) => {
     try {
-      const hre = require('hardhat');
       // Hardhat only reads network via env/cmd flags; spawn a sub-process
-      const { spawn } = require('child_process');
       const script = `
-        const hre = require('hardhat');
+        const hre = await import('hardhat');
+        const { ethers } = await import('ethers');
         (async () => {
-          const [s] = await hre.ethers.getSigners();
+          const [s] = await hre.default.ethers.getSigners();
           const addr = await s.getAddress();
-          const bal = await hre.ethers.provider.getBalance(addr);
-          console.log(addr, require('ethers').formatEther(bal));
+          const bal = await hre.default.ethers.provider.getBalance(addr);
+          console.log(addr, ethers.formatEther(bal));
         })().catch(e=>{console.error(e); process.exit(1)});
       `;
       const node = spawn('node', ['-e', script], { stdio: 'inherit', env: { ...process.env, HARDHAT_NETWORK: opts.network } });
@@ -121,13 +124,67 @@ program
   });
 
 program
+  .command('analyze')
+  .description('Analyze contract for Arbitrum migration readiness')
+  .argument('<address>', 'Contract address to analyze')
+  .option('--output <format>', 'Output format: json, html, csv, or all', 'all')
+  .option('--network <name>', 'Source network for analysis', 'ethereum')
+  .action(async (address, opts) => {
+    try {
+      await analyzeContract(address, {
+        output: opts.output,
+        network: opts.network
+      });
+    } catch (err) {
+      console.error(chalk.red('Analysis failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('optimize')
+  .description('Optimize contract for Arbitrum deployment')
+  .argument('<contract>', 'Contract file path to optimize')
+  .option('--output <path>', 'Output path for optimized contract')
+  .option('--level <level>', 'Optimization level: basic, advanced, or aggressive', 'advanced')
+  .action(async (contract, opts) => {
+    try {
+      await optimizeContract(contract, {
+        output: opts.output,
+        level: opts.level
+      });
+    } catch (err) {
+      console.error(chalk.red('Optimization failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('benchmark')
+  .description('Benchmark contract performance on Ethereum vs Arbitrum')
+  .argument('<contract>', 'Contract file path to benchmark')
+  .option('--output <path>', 'Output path for benchmark report')
+  .option('--detailed', 'Include detailed performance metrics')
+  .action(async (contract, opts) => {
+    try {
+      await benchmarkContract(contract, {
+        output: opts.output,
+        detailed: opts.detailed,
+        contractPath: contract
+      });
+    } catch (err) {
+      console.error(chalk.red('Benchmark failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
   .command('node')
   .description('Start a local Hardhat node on localhost:8545 (Ctrl+C to stop)')
   .option('--hostname <host>', 'Hostname to bind', '127.0.0.1')
   .option('--port <port>', 'Port to bind', '8545')
   .action(async (opts) => {
     try {
-      const { spawn } = require('child_process');
       const hh = spawn('npx', ['hardhat', 'node', '--hostname', opts.hostname, '--port', opts.port], { stdio: 'inherit' });
       hh.on('exit', (code) => process.exit(code ?? 0));
     } catch (err) {
@@ -141,20 +198,19 @@ program
   .description('Attach to the latest local deployment of Counter and test increment')
   .action(async () => {
     try {
-      const { spawn } = require('child_process');
       const script = `
-        const fs = require('fs');
-        const path = require('path');
-        const hre = require('hardhat');
+        const fs = await import('fs');
+        const path = await import('path');
+        const hre = await import('hardhat');
         (async () => {
-          const deploymentsDir = path.join(process.cwd(), 'migration', 'deployments');
-          const file = path.join(deploymentsDir, 'localhost-Counter.json');
-          if (!fs.existsSync(file)) {
+          const deploymentsDir = path.default.join(process.cwd(), 'migration', 'deployments');
+          const file = path.default.join(deploymentsDir, 'localhost-Counter.json');
+          if (!fs.default.existsSync(file)) {
             console.error('No local deployment record found. Run: arb-migrate deploy --local');
             process.exit(1);
           }
-          const { address } = JSON.parse(fs.readFileSync(file, 'utf8'));
-          const Counter = await hre.ethers.getContractFactory('Counter');
+          const { address } = JSON.parse(fs.default.readFileSync(file, 'utf8'));
+          const Counter = await hre.default.ethers.getContractFactory('Counter');
           const c = await Counter.attach(address);
           const before = await c.value();
           const tx = await c.increment(1);
@@ -179,7 +235,6 @@ program
   .option('--address <addr>', 'Contract address to verify')
   .option('--constructor-args <args>', 'JSON array of constructor args', '[]')
   .action(async (opts) => {
-    const { spawn } = require('child_process');
     const args = JSON.parse(opts.constructorArgs);
     const cmd = ['hardhat', 'verify', '--network', opts.network, opts.address, ...args.map(String)];
     const hh = spawn('npx', cmd, { stdio: 'inherit' });
@@ -192,7 +247,6 @@ program
   .option('--network <name>', 'Network name', 'arbitrumSepolia')
   .option('--interval <sec>', 'Polling interval seconds', '20')
   .action(async (opts) => {
-    const { spawn } = require('child_process');
     const env = { ...process.env, HARDHAT_NETWORK: opts.network, INTERVAL_SEC: String(opts.interval) };
     const proc = spawn('node', ['scripts/auto-deploy.js'], { stdio: 'inherit', env });
     proc.on('exit', (code) => process.exit(code ?? 0));
@@ -204,11 +258,18 @@ program
   .option('--network <name>', 'Network name', 'arbitrumSepolia')
   .option('--config <path>', 'Path to migration config JSON', 'migration/config.example.json')
   .option('--json', 'Output JSON only', false)
+  .option('--local', 'Use local hardhat network', false)
   .action(async (opts) => {
-    const { spawn } = require('child_process');
-    const env = { ...process.env, HARDHAT_NETWORK: opts.network, FLOWPORT_CONFIG: opts.config };
+    const env = { ...process.env, FLOWPORT_CONFIG: opts.config };
     if (opts.json) env.JSON_OUT = '1';
-    const proc = spawn('npx', ['hardhat', 'run', 'scripts/plan-config.js', '--network', opts.network], { stdio: 'inherit', env });
+    if (opts.local) {
+      env.HARDHAT_NETWORK = 'localhost';
+    } else {
+      env.HARDHAT_NETWORK = opts.network;
+    }
+    const args = ['hardhat', 'run', 'scripts/plan-config.js'];
+    if (!opts.local) args.push('--network', opts.network);
+    const proc = spawn('npx', args, { stdio: 'inherit', env });
     proc.on('exit', (code) => process.exit(code ?? 0));
   });
 
@@ -217,7 +278,6 @@ program
   .description('Validate a migration config JSON against the schema')
   .option('--config <path>', 'Path to migration config JSON', 'migration/config.example.json')
   .action(async (opts) => {
-    const { spawn } = require('child_process');
     const env = { ...process.env, FLOWPORT_CONFIG: opts.config };
     const proc = spawn('node', ['scripts/validate-config.js'], { stdio: 'inherit', env });
     proc.on('exit', (code) => process.exit(code ?? 0));
@@ -228,7 +288,6 @@ program
   .description('Verify all contracts from deployment records for a network')
   .option('--network <name>', 'Network name', 'arbitrumSepolia')
   .action(async (opts) => {
-    const { spawn } = require('child_process');
     const env = { ...process.env, HARDHAT_NETWORK: opts.network };
     const proc = spawn('node', ['scripts/verify-all.js'], { stdio: 'inherit', env });
     proc.on('exit', (code) => process.exit(code ?? 0));
@@ -247,10 +306,9 @@ program
   .command('clean')
   .description('Clean build artifacts, cache, and generated types')
   .action(() => {
-    const { rmSync } = require('fs');
     const toDelete = ['artifacts', 'cache', 'types'];
     for (const p of toDelete) {
-      try { rmSync(require('path').join(process.cwd(), p), { recursive: true, force: true }); } catch {}
+      try { rmSync(path.join(process.cwd(), p), { recursive: true, force: true }); } catch {}
     }
     console.log('Cleaned artifacts, cache, and types');
   });
@@ -260,7 +318,6 @@ program
   .description('Copy state (Counter.value) from L1 to L2 MigratableCounter')
   .option('--network <name>', 'Target L2 network', 'arbitrumSepolia')
   .action(async (opts) => {
-    const { spawn } = require('child_process');
     const env = { ...process.env, HARDHAT_NETWORK: opts.network };
     const proc = spawn('npx', ['hardhat', 'run', 'scripts/migrate-state.js', '--network', opts.network], { stdio: 'inherit', env });
     proc.on('exit', (code) => process.exit(code ?? 0));
@@ -277,7 +334,6 @@ program
   .option('--local', 'Test replay functionality locally (no external RPC required)')
   .action(async (opts) => {
     try {
-      const { spawn } = require('child_process');
       const env = { 
         ...process.env, 
         REPLAY_FROM_ADDRESS: opts.from,
@@ -299,6 +355,26 @@ program
       console.error(chalk.red('Replay failed:'), err);
       process.exit(1);
     }
+  });
+
+program
+  .command('dashboard')
+  .description('Start the Arbitrum Migration Portal web interface')
+  .option('-p, --port <port>', 'Port to run the portal on', '3000')
+  .option('-h, --host <host>', 'Host to run the portal on', 'localhost')
+  .action(async (opts) => {
+    console.log(`🚀 Starting Arbitrum Migration Portal on http://${opts.host}:${opts.port}`);
+    console.log('Press Ctrl+C to stop the portal');
+    
+    const { spawn } = await import('child_process');
+    const dashboard = spawn('npm', ['run', 'dev'], {
+      stdio: 'inherit',
+      env: { ...process.env, PORT: opts.port, HOST: opts.host }
+    });
+    
+    dashboard.on('error', (error) => {
+      console.error('Failed to start portal:', error);
+    });
   });
 
 program.parse(process.argv);

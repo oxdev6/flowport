@@ -1,7 +1,7 @@
-const hre = require('hardhat');
-const fs = require('fs');
-const path = require('path');
-const sdk = require('../src/sdk');
+import hre from 'hardhat';
+import fs from 'fs';
+import path from 'path';
+import * as sdk from '../src/sdk/index.js';
 
 async function main() {
   const sourceRpc = process.env.SOURCE_RPC_URL || process.env.ETH_RPC_URL;

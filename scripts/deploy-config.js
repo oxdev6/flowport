@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const hre = require('hardhat');
-const sdk = require('../src/sdk');
+import fs from 'fs';
+import path from 'path';
+import hre from 'hardhat';
+import * as sdk from '../src/sdk/index.js';
 
 async function main() {
-  const configPath = process.env.FLOWPORT_CONFIG || path.join(process.cwd(), 'migration', 'config.example.json');
+  const configPath = process.env.ARB_MIGRATE_CONFIG || path.join(process.cwd(), 'migration', 'config.example.json');
   if (!fs.existsSync(configPath)) {
     console.error(`Config not found: ${configPath}`);
     process.exit(1);

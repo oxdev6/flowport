@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { spawn } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { spawn } from 'child_process';
 
 async function getDeployer(hre) {
   const [signer] = await hre.ethers.getSigners();
@@ -22,13 +22,29 @@ function getDeploymentsDir() {
   return process.env.DEPLOYMENTS_DIR || path.join(process.cwd(), 'migration', 'deployments');
 }
 
-function saveDeploymentRecord(networkName, contractName, address, txHash, extras = {}) {
-  const outDir = getDeploymentsDir();
-  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-  const outPath = path.join(outDir, `${networkName}-${contractName}.json`);
-  const data = { network: networkName, contract: contractName, address, txHash, ...extras };
-  fs.writeFileSync(outPath, JSON.stringify(data, null, 2));
-  return outPath;
+async function saveDeploymentRecord(contractName, address, network, gasUsed, txHash) {
+  const deploymentsDir = path.join(process.cwd(), 'migration', 'deployments');
+  
+  if (!fs.existsSync(deploymentsDir)) {
+    fs.mkdirSync(deploymentsDir, { recursive: true });
+  }
+  
+  const timestamp = new Date().toISOString();
+  const filename = `${network}-${contractName}-${timestamp.split('T')[0]}.json`;
+  const filepath = path.join(deploymentsDir, filename);
+  
+  const deploymentData = {
+    contract: contractName,
+    address,
+    network,
+    gasUsed: gasUsed.toString(),
+    txHash,
+    timestamp
+  };
+  
+  fs.writeFileSync(filepath, JSON.stringify(deploymentData, null, 2));
+  
+  return filepath;
 }
 
 function loadDeploymentRecord(networkName, contractName) {
@@ -45,7 +61,7 @@ function verifyContract(network, address, constructorArgs = []) {
   });
 }
 
-module.exports = {
+export {
   getDeployer,
   getBalance,
   deployContract,

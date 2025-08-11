@@ -1,0 +1,12 @@
+{
+  "contract": "localhost",
+  "address": "Counter",
+  "network": "0x8509EBc97cA4bC10eaD27870a4ac1B279dc6E992",
+  "gasUsed": "0x3a8e371dc090335607d287b993ac502fd6a6a4610c50f9c1ecba306eb0c77a1e",
+  "txHash": {
+    "args": [
+      0
+    ]
+  },
+  "timestamp": "2025-08-10T20:47:56.464Z"
+}

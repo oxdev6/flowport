@@ -1,0 +1,8 @@
+{
+  "contract": "Counter",
+  "address": "0x2C103F8133e05d9D1c7916e5a583E4BFefde0EEB",
+  "network": "localhost",
+  "gasUsed": "30000000",
+  "txHash": "0xd6ec26f23648866359081e79fee1691cb569f495f03e1d699ebbbe2a310c58c4",
+  "timestamp": "2025-08-10T20:47:36.508Z"
+}

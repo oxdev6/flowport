@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const Ajv = require('ajv');
-const chalk = require('chalk');
+import fs from 'fs';
+import path from 'path';
+import Ajv from 'ajv';
+import chalk from 'chalk';
 
 function main() {
   const schemaPath = path.join(process.cwd(), 'migration', 'config.schema.json');
-  const configPath = process.env.FLOWPORT_CONFIG || path.join(process.cwd(), 'migration', 'config.example.json');
+  const configPath = process.env.ARB_MIGRATE_CONFIG || path.join(process.cwd(), 'migration', 'config.example.json');
   const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   const ajv = new Ajv({ allErrors: true, allowUnionTypes: true });

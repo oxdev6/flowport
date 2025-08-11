@@ -1,9 +1,0 @@
-{
-  "network": "localhost",
-  "contract": "Counter",
-  "address": "0xaD60cee051579E1143e3DC425573f57Ac05A1315",
-  "txHash": "0xdc8101ca1496547707fa243bea3214eef26098d485aaa31441ffcf85b99d1870",
-  "args": [
-    0
-  ]
-}

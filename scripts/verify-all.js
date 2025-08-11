@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const sdk = require('../src/sdk');
-const chalk = require('chalk');
+import fs from 'fs';
+import path from 'path';
+import * as sdk from '../src/sdk/index.js';
+import chalk from 'chalk';
 
 async function main() {
   const network = process.env.HARDHAT_NETWORK || 'arbitrumSepolia';

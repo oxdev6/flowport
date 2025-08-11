@@ -1,0 +1,12 @@
+{
+  "contract": "localhost",
+  "address": "MigratableCounter",
+  "network": "0x072A13215d3F56e195B1E7803445C51ae8392407",
+  "gasUsed": "0xc7343f044f20f5dc00d8394174fdd30e3cfaef9a9992b29fe1747e4281c368e8",
+  "txHash": {
+    "args": [
+      0
+    ]
+  },
+  "timestamp": "2025-08-10T20:47:56.748Z"
+}

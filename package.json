@@ -1,49 +1,57 @@
 {
-  "name": "flowport",
+  "name": "arb-migrate",
   "version": "1.0.0",
-  "description": "FlowPort CLI – foundation for migrations and visualization.",
-  "main": "src/index.js",
+  "description": "Arbitrum Migration Portal – comprehensive migration tools for Ethereum to Arbitrum.",
+  "main": "src/arb-migrate/index.js",
   "bin": {
-    "flowport": "src/index.js",
     "arb-migrate": "src/arb-migrate/index.js"
   },
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/arb-migrate/index.js",
     "lint": "echo 'No linter configured yet'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
     "build": "next build",
-    "start:web": "next start"
+    "start:web": "next start",
+    "analyze": "node src/arb-migrate/index.js analyze",
+    "deploy": "node src/arb-migrate/index.js deploy",
+    "dashboard": "node src/arb-migrate/index.js dashboard"
   },
   "keywords": [
-    "cli",
-    "migrations",
-    "visualization"
+    "arbitrum",
+    "migration",
+    "ethereum",
+    "l2",
+    "defi",
+    "blockchain"
   ],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "ajv": "^8.17.1",
+    "autoprefixer": "^10.4.21",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "ajv": "^8.17.1",
-    "next": "^14.2.5",
+    "framer-motion": "^12.23.12",
+    "next": "^15.4.6",
+    "postcss": "^8.4.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
+    "reactflow": "^11.11.4",
     "recharts": "^2.12.7",
-    "tailwindcss": "^3.4.1",
-    "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.35"
+    "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@nomicfoundation/hardhat-verify": "^2.0.8",
+    "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
     "hardhat": "^2.22.5",
     "ts-node": "^10.9.2",
-    "typechain": "^8.3.2",
-    "@typechain/ethers-v6": "^0.5.1"
+    "typechain": "^8.3.2"
   }
 }
