@@ -1,0 +1,74 @@
+{
+  "timestamp": "2025-08-10T23:01:36.993Z",
+  "contract": {
+    "name": "Counter.sol",
+    "size": 333,
+    "lines": 20,
+    "functions": 1,
+    "variables": 0
+  },
+  "performance": {
+    "ethereum": {
+      "deployment_gas": 69000,
+      "transaction_gas": 46000,
+      "storage_cost": 0,
+      "computation_cost": 0.05,
+      "total_cost_per_tx": 0.092,
+      "throughput": 15,
+      "finality": 12,
+      "network_congestion": "High"
+    },
+    "arbitrum": {
+      "deployment_gas": 55200,
+      "transaction_gas": 46000,
+      "storage_cost": 0,
+      "computation_cost": 0.0000025,
+      "total_cost_per_tx": 0.0000046,
+      "throughput": 4000,
+      "finality": 1,
+      "network_congestion": "Low"
+    },
+    "comparison": {
+      "cost_savings_percentage": "100.00",
+      "throughput_improvement": "26566.67",
+      "finality_improvement": "91.67",
+      "annual_savings": 33578.321,
+      "roi_estimate": "33578221.00"
+    }
+  },
+  "gas_analysis": {
+    "storage_operations": [],
+    "computation_operations": {
+      "addition": 1,
+      "subtraction": 1,
+      "multiplication": 0,
+      "division": 1,
+      "modulo": 0,
+      "exponentiation": 0
+    },
+    "external_calls": 0,
+    "memory_operations": 0,
+    "expensive_patterns": []
+  },
+  "optimization_potential": [
+    {
+      "type": "storage_packing",
+      "potential_savings": 80000,
+      "description": "4 uint256 variables could be packed",
+      "priority": "High"
+    }
+  ],
+  "security_metrics": {
+    "reentrancy_protection": false,
+    "access_control": false,
+    "safe_math": false,
+    "input_validation": false,
+    "error_handling": false,
+    "security_score": 0
+  },
+  "recommendations": {
+    "migration_recommendation": "Consider Migration",
+    "priority_level": "High",
+    "estimated_migration_time": "2-4 hours"
+  }
+}

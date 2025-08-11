@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const hre = require('hardhat');
-const chalk = require('chalk');
+import fs from 'fs';
+import path from 'path';
+import hre from 'hardhat';
+import chalk from 'chalk';
 
 async function estimateDeployGas(contractName, constructorArgs, from) {
   const factory = await hre.ethers.getContractFactory(contractName);
@@ -15,7 +15,7 @@ async function estimateDeployGas(contractName, constructorArgs, from) {
 
 async function main() {
   const jsonOut = process.env.JSON_OUT === '1';
-  const configPath = process.env.FLOWPORT_CONFIG || path.join(process.cwd(), 'migration', 'config.example.json');
+  const configPath = process.env.ARB_MIGRATE_CONFIG || path.join(process.cwd(), 'migration', 'config.example.json');
   if (!fs.existsSync(configPath)) {
     console.error(`Config not found: ${configPath}`);
     process.exit(1);

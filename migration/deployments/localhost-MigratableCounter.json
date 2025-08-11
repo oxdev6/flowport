@@ -1,9 +1,0 @@
-{
-  "network": "localhost",
-  "contract": "MigratableCounter",
-  "address": "0x7E01Fa1d951d301b976809B194F81df7baA318b8",
-  "txHash": "0x9128e210d95dc759661bf448cac4bf23c8ff6f4367239d3be6c0905fae524586",
-  "args": [
-    0
-  ]
-}

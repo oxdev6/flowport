@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
 
 async function main() {
   const intervalSec = Number(process.env.INTERVAL_SEC || 20);
   const network = process.env.HARDHAT_NETWORK || 'arbitrumSepolia';
 
-  const hre = require('hardhat');
-  const [signer] = await hre.ethers.getSigners();
+  const hre = await import('hardhat');
+  const [signer] = await hre.default.ethers.getSigners();
   const address = await signer.getAddress();
 
   async function tryDeploy() {
     try {
-      const bal = await hre.ethers.provider.getBalance(address);
+      const bal = await hre.default.ethers.provider.getBalance(address);
       if (bal > 0n) {
-        console.log(`Balance detected for ${address} on ${network}: ${hre.ethers.formatEther(bal)} ETH`);
+        console.log(`Balance detected for ${address} on ${network}: ${hre.default.ethers.formatEther(bal)} ETH`);
         const args = ['hardhat', 'run', 'scripts/deploy.js', '--network', network];
         const proc = spawn('npx', args, { stdio: 'inherit' });
         proc.on('exit', (code) => process.exit(code ?? 0));

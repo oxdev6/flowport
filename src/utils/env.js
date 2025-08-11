@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 function isHexPrivateKey(value) {
   return typeof value === 'string' && /^0x[0-9a-fA-F]{64}$/.test(value);
@@ -33,6 +33,6 @@ function printEnvReport({ requirePrivateKey = false } = {}) {
   return ok;
 }
 
-module.exports = { validateEnv, printEnvReport };
+export { validateEnv, printEnvReport };
 
 

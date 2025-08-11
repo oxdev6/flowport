@@ -1,12 +1,12 @@
-require('dotenv').config();
-require('@nomicfoundation/hardhat-ethers');
-require('@nomicfoundation/hardhat-verify');
-require('@typechain/hardhat');
+import 'dotenv/config';
+import '@nomicfoundation/hardhat-ethers';
+import '@nomicfoundation/hardhat-verify';
+import '@typechain/hardhat';
 
 const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+export default {
   solidity: {
     version: '0.8.24',
     settings: { optimizer: { enabled: true, runs: 200 } }

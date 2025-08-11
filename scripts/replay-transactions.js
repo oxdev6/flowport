@@ -1,5 +1,5 @@
-const hre = require('hardhat');
-const chalk = require('chalk');
+import hre from 'hardhat';
+import chalk from 'chalk';
 
 async function main() {
   const fromAddress = process.env.REPLAY_FROM_ADDRESS || '0x06395a32ba4c6a468D35E451cbf93b0f07da902b';
