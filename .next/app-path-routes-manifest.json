@@ -13,13 +13,14 @@
   "/api/share/snapshot/route": "/api/share/snapshot",
   "/api/trace/[chainId]/[txHash]/route": "/api/trace/[chainId]/[txHash]",
   "/api/tx/[chainId]/[txHash]/route": "/api/tx/[chainId]/[txHash]",
+  "/api/optimize/route": "/api/optimize",
   "/analytics/page": "/analytics",
   "/compare/[txHash]/page": "/compare/[txHash]",
-  "/gallery/page": "/gallery",
   "/deploy/page": "/deploy",
   "/optimize/page": "/optimize",
   "/page": "/",
+  "/reports/[id]/page": "/reports/[id]",
   "/reports/page": "/reports",
-  "/visualizer/[chainId]/[txHash]/page": "/visualizer/[chainId]/[txHash]",
-  "/reports/[id]/page": "/reports/[id]"
+  "/gallery/page": "/gallery",
+  "/visualizer/[chainId]/[txHash]/page": "/visualizer/[chainId]/[txHash]"
 }

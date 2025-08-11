@@ -13,13 +13,14 @@
   "/api/share/snapshot/route": "app/api/share/snapshot/route.js",
   "/api/trace/[chainId]/[txHash]/route": "app/api/trace/[chainId]/[txHash]/route.js",
   "/api/tx/[chainId]/[txHash]/route": "app/api/tx/[chainId]/[txHash]/route.js",
+  "/api/optimize/route": "app/api/optimize/route.js",
   "/analytics/page": "app/analytics/page.js",
   "/compare/[txHash]/page": "app/compare/[txHash]/page.js",
-  "/gallery/page": "app/gallery/page.js",
   "/deploy/page": "app/deploy/page.js",
   "/optimize/page": "app/optimize/page.js",
   "/page": "app/page.js",
+  "/reports/[id]/page": "app/reports/[id]/page.js",
   "/reports/page": "app/reports/page.js",
-  "/visualizer/[chainId]/[txHash]/page": "app/visualizer/[chainId]/[txHash]/page.js",
-  "/reports/[id]/page": "app/reports/[id]/page.js"
+  "/gallery/page": "app/gallery/page.js",
+  "/visualizer/[chainId]/[txHash]/page": "app/visualizer/[chainId]/[txHash]/page.js"
 }
