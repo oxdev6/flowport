@@ -1,8 +1,9 @@
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { analyzeOptimizations } from '../../lib/optimizer/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,190 +38,9 @@ export async function optimizeContract(contractPath, options = {}) {
   }
 }
 
-async function analyzeOptimizations(contractCode, options) {
-  const optimizations = [];
-  
-  // Storage packing analysis
-  const storageOptimizations = analyzeStoragePacking(contractCode);
-  optimizations.push(...storageOptimizations);
-  
-  // Calldata optimization analysis
-  const calldataOptimizations = analyzeCalldataUsage(contractCode);
-  optimizations.push(...calldataOptimizations);
-  
-  // Gas optimization analysis
-  const gasOptimizations = analyzeGasOptimizations(contractCode);
-  optimizations.push(...gasOptimizations);
-  
-  // Arbitrum-specific optimizations
-  const arbitrumOptimizations = analyzeArbitrumSpecific(contractCode);
-  optimizations.push(...arbitrumOptimizations);
-  
-  // Security optimizations
-  const securityOptimizations = analyzeSecurityOptimizations(contractCode);
-  optimizations.push(...securityOptimizations);
-  
-  return optimizations;
-}
+// analyzeOptimizations implementation has been moved to src/lib/optimizer/index.js
 
-function analyzeStoragePacking(contractCode) {
-  const optimizations = [];
-  
-  // Find uint256 variables that could be packed
-  const uint256Pattern = /uint256\s+(\w+)/g;
-  const matches = [...contractCode.matchAll(uint256Pattern)];
-  
-  if (matches.length > 1) {
-    const variables = matches.map(match => match[1]);
-    
-    optimizations.push({
-      type: 'storage_packing',
-      priority: 'high',
-      title: 'Storage Packing Opportunity',
-      description: `Found ${matches.length} uint256 variables that could be packed into fewer storage slots`,
-      gas_savings: `${matches.length * 20000} gas per transaction`,
-      recommendation: `Consider using uint128 or smaller types for: ${variables.join(', ')}`,
-      implementation: generateStoragePackingExample(variables),
-      impact: 'High'
-    });
-  }
-  
-  return optimizations;
-}
-
-function analyzeCalldataUsage(contractCode) {
-  const optimizations = [];
-  
-  // Find functions with memory parameters that could use calldata
-  const functionPattern = /function\s+\w+\s*\([^)]*memory[^)]*\)/g;
-  const matches = [...contractCode.matchAll(functionPattern)];
-  
-  if (matches.length > 0) {
-    optimizations.push({
-      type: 'calldata_optimization',
-      priority: 'medium',
-      title: 'Calldata Optimization',
-      description: `Found ${matches.length} functions using memory parameters that could use calldata`,
-      gas_savings: `${matches.length * 3000} gas per function call`,
-      recommendation: 'Replace memory parameters with calldata for read-only functions',
-      implementation: generateCalldataExample(),
-      impact: 'Medium'
-    });
-  }
-  
-  return optimizations;
-}
-
-function analyzeGasOptimizations(contractCode) {
-  const optimizations = [];
-  
-  // Check for expensive operations
-  const expensivePatterns = [
-    { pattern: /\.transfer\(/, name: 'transfer() calls', gas: 2300 },
-    { pattern: /\.call\(/, name: 'call() operations', gas: 2600 },
-    { pattern: /for\s*\([^)]*\)\s*\{/, name: 'loops', gas: 1000 },
-    { pattern: /mapping\s*\([^)]*\)\s*mapping/, name: 'nested mappings', gas: 5000 }
-  ];
-  
-  expensivePatterns.forEach(({ pattern, name, gas }) => {
-    const matches = contractCode.match(pattern);
-    if (matches) {
-      optimizations.push({
-        type: 'gas_optimization',
-        priority: 'medium',
-        title: `${name} Detected`,
-        description: `Found ${matches.length} instances of ${name.toLowerCase()}`,
-        gas_savings: `${matches.length * gas} gas per operation`,
-        recommendation: `Consider optimizing ${name.toLowerCase()} for better gas efficiency`,
-        implementation: generateGasOptimizationExample(name),
-        impact: 'Medium'
-      });
-    }
-  });
-  
-  return optimizations;
-}
-
-function analyzeArbitrumSpecific(contractCode) {
-  const optimizations = [];
-  
-  // Arbitrum-specific optimizations
-  const arbitrumPatterns = [
-    {
-      pattern: /block\.timestamp/,
-      name: 'block.timestamp usage',
-      recommendation: 'Consider using Arbitrum\'s L2 block timestamp for better accuracy',
-      gas_savings: '500 gas per call'
-    },
-    {
-      pattern: /msg\.gas/,
-      name: 'msg.gas usage',
-      recommendation: 'msg.gas behavior differs on Arbitrum - consider alternatives',
-      gas_savings: '1000 gas per call'
-    }
-  ];
-  
-  arbitrumPatterns.forEach(({ pattern, name, recommendation, gas_savings }) => {
-    const matches = contractCode.match(pattern);
-    if (matches) {
-      optimizations.push({
-        type: 'arbitrum_specific',
-        priority: 'high',
-        title: name,
-        description: `Found ${matches.length} instances of ${name.toLowerCase()}`,
-        gas_savings,
-        recommendation,
-        implementation: generateArbitrumExample(name),
-        impact: 'High'
-      });
-    }
-  });
-  
-  return optimizations;
-}
-
-function analyzeSecurityOptimizations(contractCode) {
-  const optimizations = [];
-  
-  // Security checks
-  const securityPatterns = [
-    {
-      pattern: /require\s*\([^)]*\)/,
-      name: 'require statements',
-      recommendation: 'Good security practice detected'
-    },
-    {
-      pattern: /modifier\s+\w+/,
-      name: 'modifiers',
-      recommendation: 'Access control modifiers detected'
-    },
-    {
-      pattern: /reentrancyGuard/,
-      name: 'reentrancy protection',
-      recommendation: 'Reentrancy protection detected'
-    }
-  ];
-  
-  securityPatterns.forEach(({ pattern, name, recommendation }) => {
-    const matches = contractCode.match(pattern);
-    if (matches) {
-      optimizations.push({
-        type: 'security_check',
-        priority: 'low',
-        title: `${name} Found`,
-        description: `Found ${matches.length} instances of ${name.toLowerCase()}`,
-        gas_savings: '0 gas (security feature)',
-        recommendation,
-        implementation: 'Security feature - no changes needed',
-        impact: 'Low'
-      });
-    }
-  });
-  
-  return optimizations;
-}
-
-function generateStoragePackingExample(variables) {
+function _generateStoragePackingExample(variables) {
   return `// Before:
 ${variables.map(v => `uint256 ${v};`).join('\n')}
 
@@ -232,7 +52,7 @@ struct PackedData {
 PackedData public packedData;`;
 }
 
-function generateCalldataExample() {
+function _generateCalldataExample() {
   return `// Before:
 function processData(string memory data) external {
     // function body
@@ -244,7 +64,7 @@ function processData(string calldata data) external {
 }`;
 }
 
-function generateGasOptimizationExample(operation) {
+function _generateGasOptimizationExample(operation) {
   switch (operation) {
     case 'transfer() calls':
       return `// Before:
@@ -269,7 +89,7 @@ for (uint i = 0; i < length; i++) {
   }
 }
 
-function generateArbitrumExample(operation) {
+function _generateArbitrumExample(operation) {
   switch (operation) {
     case 'block.timestamp usage':
       return `// Before:

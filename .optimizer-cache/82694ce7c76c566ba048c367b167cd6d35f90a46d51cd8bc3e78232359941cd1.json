@@ -1,0 +1,15 @@
+{
+  "suggestions": [
+    {
+      "type": "storage_packing",
+      "priority": "high",
+      "title": "Storage Packing Opportunity",
+      "description": "Found 4 uint256 variables that could be packed into fewer storage slots",
+      "gas_savings": "80000 gas per transaction",
+      "recommendation": "Consider using uint128 or smaller types for: public, newValue, initialValue, by",
+      "implementation": "// Before:\nuint256 public;\nuint256 newValue;\nuint256 initialValue;\nuint256 by;\n\n// After:\nstruct PackedData {\n    uint128 public;\n    uint128 newValue;\n}\nPackedData public packedData;",
+      "impact": "High"
+    }
+  ],
+  "createdAt": 1755621460096
+}

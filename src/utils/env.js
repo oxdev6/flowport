@@ -6,7 +6,7 @@ function isHexPrivateKey(value) {
 
 function validateEnv({ requirePrivateKey = false } = {}) {
   const issues = [];
-  const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY } = process.env;
+  const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY, ARBITRUM_ONE_RPC_URL } = process.env;
 
   if (requirePrivateKey) {
     if (!PRIVATE_KEY) issues.push('PRIVATE_KEY is missing');
@@ -14,7 +14,8 @@ function validateEnv({ requirePrivateKey = false } = {}) {
   }
 
   if (!ETH_RPC_URL) issues.push('ETH_RPC_URL is missing (optional unless using L1 ops)');
-  if (!ARB_RPC_URL) issues.push('ARB_RPC_URL is missing for Arbitrum networks');
+  if (!ARB_RPC_URL) issues.push('ARB_RPC_URL is missing for Arbitrum Sepolia');
+  if (!ARBITRUM_ONE_RPC_URL) issues.push('ARBITRUM_ONE_RPC_URL is missing for Arbitrum One');
   if (!ARBISCAN_API_KEY) issues.push('ARBISCAN_API_KEY is missing (optional, needed for verify)');
 
   const ok = issues.length === 0;

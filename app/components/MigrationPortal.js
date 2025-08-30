@@ -8,7 +8,7 @@ export default function MigrationPortal() {
   const [contractAddress, setContractAddress] = useState('');
   const [analysis, setAnalysis] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [migrationStatus, setMigrationStatus] = useState(null);
+  const [_migrationStatus, _setMigrationStatus] = useState(null);
   const [activeTab, setActiveTab] = useState('analyze');
   const [isLoading, setIsLoading] = useState(true);
   const [deployNetwork, setDeployNetwork] = useState('arbitrumSepolia');

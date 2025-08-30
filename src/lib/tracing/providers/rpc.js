@@ -46,7 +46,7 @@ function flattenCallTracer(root) {
   }
   walk(root, null, 0);
   // backfill children arrays
-  const byId = Object.fromEntries(frames.map((f) => [f.id, f]));
+  const _byId = Object.fromEntries(frames.map((f) => [f.id, f]));
   for (const f of frames) {
     if (Array.isArray(f.children)) continue; // already set
     f.children = [];

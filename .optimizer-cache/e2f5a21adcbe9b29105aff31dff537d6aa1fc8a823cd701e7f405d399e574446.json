@@ -1,0 +1,34 @@
+{
+  "suggestions": [
+    {
+      "type": "storage_packing",
+      "priority": "high",
+      "title": "Storage Packing Opportunity",
+      "description": "Found 2 uint256 variables that could be packed into fewer storage slots",
+      "gas_savings": "40000 gas per transaction",
+      "recommendation": "Consider using uint128 or smaller types for: a, b",
+      "implementation": "// Before:\nuint256 a;\nuint256 b;\n\n// After:\nstruct PackedData {\n    uint128 a;\n    uint128 b;\n}\nPackedData public packedData;",
+      "impact": "High"
+    },
+    {
+      "type": "calldata_optimization",
+      "priority": "medium",
+      "title": "Calldata Optimization",
+      "description": "Found 1 functions using memory parameters that could use calldata",
+      "gas_savings": "3000 gas per function call",
+      "recommendation": "Replace memory parameters with calldata for read-only functions",
+      "implementation": "// Before:\nfunction processData(string memory data) external {\n    // ...\n}\n\n// After:\nfunction processData(string calldata data) external {\n    // ...\n}",
+      "impact": "Medium"
+    },
+    {
+      "type": "storage_packing",
+      "priority": "high",
+      "title": "Storage Packing Opportunity (AST)",
+      "description": "Found 2 uint256 state variables; consider packing",
+      "gas_savings": "40000 gas per transaction",
+      "recommendation": "Use smaller types (uint128) or structs to pack slots",
+      "impact": "High"
+    }
+  ],
+  "createdAt": 1755622999516
+}

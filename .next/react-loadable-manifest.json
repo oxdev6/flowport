@@ -1,32 +1,15 @@
 {
-  "app/analytics/page.js -> ../components/charts/BarMini": {
-    "id": 1083,
+  "app/optimize/page.js -> @monaco-editor/react": {
+    "id": "app/optimize/page.js -> @monaco-editor/react",
     "files": [
-      "static/chunks/83.60827decf698f277.js"
-    ]
-  },
-  "app/analytics/page.js -> ../components/charts/Sparkline": {
-    "id": 642,
-    "files": [
-      "static/chunks/642.92f47972169e4613.js"
-    ]
-  },
-  "app/compare/[txHash]/page.js -> ../../components/GraphView": {
-    "id": 8691,
-    "files": [
-      "static/css/d1e1fa7731bfdccb.css",
-      "static/chunks/c37d3baf.f21f6661713bd70e.js",
-      "static/chunks/889.5145ce00eb58dcd4.js",
-      "static/chunks/691.62d1d3142ff3fe4b.js"
+      "static/chunks/_app-pages-browser_node_modules_monaco-editor_react_dist_index_mjs.js"
     ]
   },
   "app/visualizer/[chainId]/[txHash]/page.js -> ../../../components/GraphView": {
-    "id": 8691,
+    "id": "app/visualizer/[chainId]/[txHash]/page.js -> ../../../components/GraphView",
     "files": [
-      "static/css/d1e1fa7731bfdccb.css",
-      "static/chunks/c37d3baf.f21f6661713bd70e.js",
-      "static/chunks/889.5145ce00eb58dcd4.js",
-      "static/chunks/691.62d1d3142ff3fe4b.js"
+      "static/css/_app-pages-browser_app_components_GraphView_js.css",
+      "static/chunks/_app-pages-browser_app_components_GraphView_js.js"
     ]
   }
 }

@@ -1,12 +1,33 @@
 'use client';
-import { useMemo, useCallback } from 'react';
-import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
+import { useMemo, useCallback, useEffect, useState } from 'react';
+import ReactFlowDefault, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import GlassNode from './flow/GlassNode';
 
-export default function GraphView({ graph, highlightedNodeId, onNodeSelect }) {
+export default function GraphView({ graph, highlightedNodeId, onNodeSelect, mkEdgeTooltip }) {
   const { nodes: nodesMap, tokenTransfers } = graph || {};
-  const { rfNodes, rfEdges } = useMemo(() => toReactFlow(nodesMap, tokenTransfers), [nodesMap, tokenTransfers]);
+  const { rfNodes, rfEdges } = useMemo(() => toReactFlow(nodesMap, tokenTransfers, mkEdgeTooltip), [nodesMap, tokenTransfers, mkEdgeTooltip]);
+  const [rfInstance, setRfInstance] = useState(null);
+
+  useEffect(() => {
+    if (!rfInstance || typeof window === 'undefined') return;
+    const handler = (ev) => {
+      try {
+        const id = String(ev?.detail || '');
+        if (!id) return;
+        const node = rfInstance.getNode?.(id);
+        if (!node) return;
+        const pos = node.positionAbsolute || node.position || { x: 0, y: 0 };
+        const width = (node?.measured || node)?.width || 180;
+        const height = (node?.measured || node)?.height || 54;
+        const cx = pos.x + width / 2;
+        const cy = pos.y + height / 2;
+        rfInstance.setCenter?.(cx, cy, { zoom: 1.3, duration: 300 });
+      } catch {}
+    };
+    window.addEventListener('centerOnNode', handler);
+    return () => window.removeEventListener('centerOnNode', handler);
+  }, [rfInstance]);
 
   const nodeTypes = useMemo(() => ({ glass: GlassNode }), []);
 
@@ -30,7 +51,8 @@ export default function GraphView({ graph, highlightedNodeId, onNodeSelect }) {
 
   return (
     <div className="w-full h-full" style={{ background: 'transparent' }}>
-      <ReactFlow
+      <ReactFlowDefault
+        onInit={(inst)=>{ setRfInstance(inst); }}
         nodes={styledNodes}
         edges={rfEdges}
         nodeTypes={nodeTypes}
@@ -47,12 +69,12 @@ export default function GraphView({ graph, highlightedNodeId, onNodeSelect }) {
           style={{ height: 120, width: 200, bottom: 12, right: 12, background: 'rgba(0,0,0,0.4)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)' }}
         />
         <Controls />
-      </ReactFlow>
+      </ReactFlowDefault>
     </div>
   );
 }
 
-function toReactFlow(nodesMap, transfers) {
+function toReactFlow(nodesMap, transfers, mkEdgeTooltip) {
   const rfNodes = [];
   const rfEdges = [];
   if (!nodesMap) return { rfNodes, rfEdges };
@@ -78,7 +100,21 @@ function toReactFlow(nodesMap, transfers) {
       });
       if (Array.isArray(n.children)) {
         for (const childId of n.children) {
-          rfEdges.push({ id: `${n.id}-${childId}`, source: String(n.id), target: String(childId), animated: false });
+          const child = nodesMap[String(childId)];
+          const shortLabel = `${short(child?.functionName || child?.type || 'call')}${child?.gasUsed ? ` • gas ${child.gasUsed}` : ''}${child?.status === 'revert' ? ' • revert' : ''}`;
+          const tooltip = typeof mkEdgeTooltip === 'function'
+            ? mkEdgeTooltip(n, child)
+            : defaultEdgeTooltip(n, child);
+          const isRevert = child?.status === 'revert';
+          rfEdges.push({
+            id: `${n.id}-${childId}`,
+            source: String(n.id),
+            target: String(childId),
+            animated: false,
+            label: (<span title={tooltip} className="cursor-help select-none">{shortLabel}</span>),
+            style: isRevert ? { stroke: '#f87171', strokeDasharray: '6 4' } : { stroke: '#60a5fa' },
+            labelStyle: isRevert ? { fill: '#fca5a5', fontSize: 10 } : { fill: '#93c5fd', fontSize: 10 }
+          });
         }
       }
     });
@@ -100,11 +136,12 @@ function toReactFlow(nodesMap, transfers) {
           style: { width: 180, height: 54, padding: 8, fontSize: 12, whiteSpace: 'pre', background: 'rgba(59,130,246,0.08)', border: '1px dashed #60a5fa', color: '#bfdbfe' }
         });
       }
+      const ttip = `${t.symbol || ''} transfer${t.amount ? `: ${t.amount}` : ''}${t.from || t.to ? `\n${t.from ? shortAddr(t.from) : ''} -> ${t.to ? shortAddr(t.to) : ''}` : ''}`.trim();
       rfEdges.push({
         id: `transfer-${fromId}-${toId}`,
         source: fromId,
         target: toId,
-        label: `${t.amount} ${t.symbol}`,
+        label: (<span title={ttip} className="cursor-help select-none">{`${t.amount} ${t.symbol}`}</span>),
         style: { strokeDasharray: '6 4', stroke: '#60a5fa' },
         labelStyle: { fill: '#93c5fd', fontSize: 10 }
       });
@@ -124,5 +161,20 @@ function shortAddr(addr) {
   if (addr.length <= 10) return addr;
   return addr.slice(0, 6) + '…' + addr.slice(-4);
 }
+
+
+function defaultEdgeTooltip(parent, child) {
+  try {
+    const left = `${child?.functionName || child?.type || 'call'}`;
+    const parts = [left];
+    if (typeof child?.gasUsed !== 'undefined') parts.push(`gas ${child.gasUsed}`);
+    if (child?.status) parts.push(child.status);
+    if (parent?.to || parent?.from || child?.to || child?.from) parts.push(`${shortAddr(parent?.to || parent?.from || '')}->${shortAddr(child?.to || child?.from || '')}`);
+    return parts.join(' • ');
+  } catch {
+    return String(child?.functionName || child?.type || 'call');
+  }
+}
+
 
 

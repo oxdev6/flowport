@@ -110,6 +110,7 @@ arb-migrate dashboard --port 3000
 - **Security Scanner**: Arbitrum-specific optimization detection
 - **DAO Metrics**: Live dashboard for ecosystem impact tracking
 - **Partner Demos**: Real-world case studies for marketing
+- **AI Migration Copilot**: Inline contract analysis & optimization suggestions with percentage coverage tracking
 - Config: project-level configuration for targets, environments, and outputs
 
 ### Web Dashboard
@@ -128,6 +129,88 @@ arb-migrate dashboard --port 3000
 
 Then open http://localhost:3000 in your browser.
 
+### AI Migration Copilot (Optimizer)
+
+The Optimizer tab provides on-the-fly contract analysis. Paste Solidity source and receive categorized suggestions plus an interactive coverage bar.
+
+Run locally:
+
+```bash
+# Dev server with hot-reload
+npm run dev
+# navigate to /optimize
+```
+
+Behind the scenes the request hits `POST /api/optimize` which calls the shared optimizer library (`src/lib/optimizer`). The same engine powers the CLI command:
+
+```bash
+arb-migrate optimize contracts/Counter.sol
+arb-migrate optimize-project . --slither
+```
+
+#### Slither integration (optional)
+
+You can augment results with Slither findings when Slither is available or when you explicitly enable it.
+
+Install on macOS:
+
+```bash
+# via pipx (recommended)
+brew install pipx
+pipx install slither-analyzer --include-deps
+# ensure ~/.local/bin is on PATH for future shells
+pipx ensurepath
+# install solc (required by slither)
+brew install solidity
+```
+
+Usage:
+
+```bash
+# CLI
+SLITHER_ENABLED=1 npx arb-migrate optimize contracts/Counter.sol
+SLITHER_ENABLED=1 npx arb-migrate optimize-project .
+
+# Web UI (dev server)
+SLITHER_ENABLED=1 npm run dev
+# open /optimize and run a scan
+# You can also POST a project directory to the API:
+# curl -X POST /api/optimize -d '{"projectDir":"/absolute/path"}'
+
+Security note: projectDir scans are disabled in production builds and intended for local development only.
+```
+
+Notes:
+- If `SLITHER_ENABLED` is unset, the optimizer auto-detects Slither and uses it when found.
+- Slither findings are normalized into suggestions and merged with heuristic results.
+
+#### Optimizer cache
+
+Optimization results are cached by the SHA‑256 hash of the Solidity source under `.optimizer-cache/`.
+
+- Clear cache: delete the folder `.optimizer-cache/`.
+- Cache is used by both CLI and API.
+
+### Tests
+
+Run unit tests for the optimizer:
+
+```bash
+npm test
+```
+
+### Docker
+
+Build and run the web app in production mode:
+
+```bash
+docker build -t flowport:latest .
+docker run -p 3000:3000 flowport:latest
+# open http://localhost:3000
+```
+
+---
+
 ### Visualizer MVP (Milestone 3)
 
 Environment:
@@ -139,6 +222,24 @@ Environment:
 - `SHARE_SIGNING_SECRET`
 
 Docs: `docs/milestone-3-visualizer-mvp.md`
+
+### Release Notes (v1.1.0)
+
+- Optimizer (AI Copilot)
+  - Monaco inline diagnostics from Solhint
+  - Metrics mini-bar, coverage bar, sticky toolbar
+  - Search/filter persistence, toasts, Cmd/Ctrl+Enter shortcut
+  - Copy/Apply single fix and Copy/Apply all fixes
+- Visualizer
+  - Edge tooltips (ABI-aware), revert styling, center-on-selected
+  - L1/L2 diff: side-by-side, synced scroll, keyboard nav, copy diff
+  - Export replay (JSON/HTML), print-friendly HTML, screenshot PNG, copy link
+- Deploy/Verify
+  - UI polish and status improvements
+- CSS
+  - Safari `-webkit-backdrop-filter` fallbacks; fixed `:root` selector
+
+Upgrade: package version bumped to 1.1.0.
 
 ### License
 
