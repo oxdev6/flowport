@@ -1,7 +1,33 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+.vercel/
+
+# Build outputs
+coverage/
+dist/
+.turbo/
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+
+# App caches
+.optimizer-cache/
 artifacts/
 cache/
-types/
-node_modules/
-*.log
-.env
-.env
+reports/*.html
+reports/*.csv
