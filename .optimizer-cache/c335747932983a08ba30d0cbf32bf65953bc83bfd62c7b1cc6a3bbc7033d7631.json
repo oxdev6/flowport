@@ -1,0 +1,91 @@
+{
+  "suggestions": [
+    {
+      "type": "storage_packing",
+      "priority": "high",
+      "title": "Storage Packing Opportunity",
+      "description": "Found 5 uint256 variables that could be packed into fewer storage slots",
+      "gas_savings": "100000 gas per transaction",
+      "recommendation": "Consider using uint128 or smaller types for: value, other, s, newValue, amount",
+      "implementation": "// Before:\nuint256 value;\nuint256 other;\nuint256 s;\nuint256 newValue;\nuint256 amount;\n\n// After:\nstruct PackedData {\n    uint128 value;\n    uint128 other;\n}\nPackedData public packedData;",
+      "impact": "High",
+      "source": "heuristic"
+    },
+    {
+      "type": "calldata_optimization",
+      "priority": "medium",
+      "title": "Calldata Optimization",
+      "description": "Found 1 functions using memory parameters that could use calldata",
+      "gas_savings": "3000 gas per function call",
+      "recommendation": "Replace memory parameters with calldata for read-only functions",
+      "implementation": "// Before:\nfunction processData(string memory data) external {\n    // ...\n}\n\n// After:\nfunction processData(string calldata data) external {\n    // ...\n}",
+      "impact": "Medium",
+      "source": "heuristic"
+    },
+    {
+      "type": "gas_optimization",
+      "priority": "medium",
+      "title": "transfer() calls Detected",
+      "description": "Found 1 instances of transfer() calls",
+      "gas_savings": "2300 gas per operation",
+      "recommendation": "Consider optimizing transfer() calls for better gas efficiency",
+      "implementation": "// Before:\nrecipient.transfer(amount);\n\n// After:\n(bool success, ) = recipient.call{value: amount}(\"\");\nrequire(success, \"Transfer failed\");",
+      "impact": "Medium",
+      "source": "heuristic"
+    },
+    {
+      "type": "gas_optimization",
+      "priority": "medium",
+      "title": "loops Detected",
+      "description": "Found 1 instances of loops",
+      "gas_savings": "1000 gas per operation",
+      "recommendation": "Consider optimizing loops for better gas efficiency",
+      "implementation": "// Before:\nfor (uint i = 0; i < array.length; i++) {\n    // expensive\n}\n\n// After:\nuint length = array.length;\nfor (uint i = 0; i < length; i++) {\n    // expensive\n}",
+      "impact": "Medium",
+      "source": "heuristic"
+    },
+    {
+      "type": "arbitrum_specific",
+      "priority": "high",
+      "title": "block.timestamp usage",
+      "description": "Found 1 instances of block.timestamp usage",
+      "gas_savings": "500 gas per call",
+      "recommendation": "Consider using Arbitrum's L2 block timestamp for better accuracy",
+      "implementation": "// Before:\nuint256 timestamp = block.timestamp;\n\n// After:\nuint256 timestamp = block.timestamp; // Arbitrum L2 timestamp",
+      "impact": "High",
+      "source": "heuristic"
+    },
+    {
+      "type": "security_check",
+      "priority": "low",
+      "title": "require statements Found",
+      "description": "Found 1 instances of require statements",
+      "gas_savings": "0 gas (security feature)",
+      "recommendation": "Good security practice detected",
+      "implementation": "Security feature – no changes needed",
+      "impact": "Low",
+      "source": "heuristic"
+    },
+    {
+      "type": "storage_packing",
+      "priority": "high",
+      "title": "Storage Packing Opportunity (AST)",
+      "description": "Found 2 uint256 state variables; consider packing",
+      "gas_savings": "40000 gas per transaction",
+      "recommendation": "Use smaller types (uint128) or structs to pack slots",
+      "impact": "High",
+      "source": "ast"
+    },
+    {
+      "type": "calldata_optimization",
+      "priority": "medium",
+      "title": "Calldata Optimization (Heuristic)",
+      "description": "Detected memory array parameter(s) in a function signature; prefer calldata for read-only functions",
+      "gas_savings": "3000 gas per call",
+      "recommendation": "Replace memory arrays with calldata for read-only functions",
+      "impact": "Medium",
+      "source": "ast"
+    }
+  ],
+  "createdAt": 1755624157599
+}

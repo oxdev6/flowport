@@ -1,0 +1,15 @@
+{
+  "suggestions": [
+    {
+      "type": "calldata_optimization",
+      "priority": "medium",
+      "title": "Calldata Optimization",
+      "description": "Found 1 functions using memory parameters that could use calldata",
+      "gas_savings": "3000 gas per function call",
+      "recommendation": "Replace memory parameters with calldata for read-only functions",
+      "implementation": "// Before:\nfunction processData(string memory data) external {\n    // ...\n}\n\n// After:\nfunction processData(string calldata data) external {\n    // ...\n}",
+      "impact": "Medium"
+    }
+  ],
+  "createdAt": 1755622997420
+}

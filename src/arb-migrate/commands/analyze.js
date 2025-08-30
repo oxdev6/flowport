@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Enhanced contract analysis with real blockchain data
-async function analyzeContractBytecode(provider, address) {
+async function analyzeContractBytecode(provider, _address) {
   try {
     const bytecode = await provider.getCode(address);
     const contractSize = bytecode.length / 2 - 1; // Remove '0x' prefix
@@ -77,7 +77,7 @@ function detectOptimizations(patterns) {
 }
 
 // Real gas estimation with current network data
-async function estimateRealGasCosts(provider, address) {
+async function estimateRealGasCosts(provider, _address) {
   try {
     const gasPrice = await provider.getFeeData();
     const currentPrice = ethers.formatUnits(gasPrice.gasPrice, 'gwei');
@@ -107,7 +107,7 @@ async function estimateRealGasCosts(provider, address) {
   }
 }
 
-export async function analyzeContract(address, options = {}) {
+export async function analyzeContract(address, _options = {}) {
   console.log(chalk.blue.bold('\n🔍 Arbitrum Migration Analysis\n'));
   
   try {
@@ -119,7 +119,7 @@ export async function analyzeContract(address, options = {}) {
     
     // Initialize provider for real analysis
     const provider = new ethers.JsonRpcProvider(
-      options.network === 'ethereum' 
+      _options.network === 'ethereum' 
         ? 'https://eth-mainnet.g.alchemy.com/v2/demo'
         : 'https://arb-mainnet.g.alchemy.com/v2/demo'
     );
@@ -173,8 +173,8 @@ export async function analyzeContract(address, options = {}) {
     
     displayAnalysis(analysis);
     
-    if (options.output) {
-      await generateReports(analysis, options.output);
+    if (_options.output) {
+      await generateReports(analysis, _options.output);
     }
     
     return analysis;
@@ -255,7 +255,7 @@ function generateDefaultOptimizations() {
   ];
 }
 
-async function simulateAnalysis(address) {
+async function _simulateAnalysis(_address) {
   const steps = [
     'Fetching contract bytecode...',
     'Analyzing contract structure...',
@@ -272,7 +272,7 @@ async function simulateAnalysis(address) {
   }
 }
 
-async function generateAnalysis(address, options) {
+async function _generateAnalysis(_address, _options) {
   // This would integrate with real analysis services
   // For now, we'll generate sample data
   return {
@@ -406,7 +406,7 @@ function displayAnalysis(analysis) {
   console.log(chalk.green.bold('\n✨ Ready for migration! Use `arb-migrate deploy` to proceed.\n'));
 }
 
-async function generateReports(analysis, outputPath) {
+async function generateReports(analysis, _outputPath) {
   console.log(chalk.blue('\n📄 Generating reports...'));
   
   // Create reports directory

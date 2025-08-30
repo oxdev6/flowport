@@ -32,10 +32,13 @@ export default function GalleryPage() {
             const q = query.toLowerCase();
             return !q || it.title.toLowerCase().includes(q) || it.txHash.toLowerCase().includes(q);
           }).map((it) => (
-            <Link key={it.id} href={`/visualizer/${it.chainId}/${it.txHash}`} className="bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/15 transition-colors">
-              <div className="font-medium text-white mb-1">{it.title}</div>
-              <div className="text-xs text-blue-200 font-mono">{it.txHash}</div>
-              <div className="mt-2 text-xs text-blue-300">Chain: {it.chainId}</div>
+            <Link key={it.id} href={`/visualizer/${it.chainId}/${it.txHash}`} className="bg-white/10 border border-white/20 rounded-xl p-0 hover:bg-white/15 transition-colors overflow-hidden">
+              {it.thumbnail && <img src={it.thumbnail} alt="thumbnail" className="w-full h-32 object-cover" />}
+              <div className="p-4">
+                <div className="font-medium text-white mb-1">{it.title}</div>
+                <div className="text-xs text-blue-200 font-mono truncate">{it.txHash}</div>
+                <div className="mt-2 text-xs text-blue-300">Chain: {it.chainId}</div>
+              </div>
             </Link>
           ))}
         </div>

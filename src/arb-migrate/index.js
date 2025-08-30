@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import path from 'path';
-import fs from 'fs';
+import fs, { rmSync } from 'fs';
 import chalk from 'chalk';
 import { printEnvReport } from '../utils/env.js';
 import { spawn } from 'child_process';
-import { rmSync } from 'fs';
 import { analyzeContract } from './commands/analyze.js';
 import { optimizeContract } from './commands/optimize.js';
 import { benchmarkContract } from './commands/benchmark.js';
+import { optimizeProject } from './commands/optimizeProject.js';
+import { loadOrbitConfig } from '../utils/orbit.js';
 
 const program = new Command();
 
@@ -57,6 +58,7 @@ program
   .option('--network <name>', 'Network name in hardhat.config.js', 'arbitrumSepolia')
   .option('--local', 'Deploy to local hardhat node (with optional Arbitrum Sepolia forking)')
   .option('--config <path>', 'Path to migration config (JSON) to deploy multiple contracts')
+  .option('--orbit-config <path>', 'Path to Orbit chain config JSON (name,rpcUrl,chainId)')
   .option('--dry-run', 'Do not send transactions; estimate gas/costs only')
   .option('--json', 'Output JSON with deployed address/tx (when not dry-run)')
   .action(async (opts) => {
@@ -82,6 +84,7 @@ program
         args.push('scripts/deploy.js');
       }
       const env = { ...process.env };
+      if (opts.orbitConfig) env.ORBIT_CONFIG = opts.orbitConfig;
       if (opts.config) env.ARB_MIGRATE_CONFIG = opts.config;
       if (opts.json) env.JSON_OUT = '1';
       if (opts.local) {
@@ -174,6 +177,22 @@ program
       });
     } catch (err) {
       console.error(chalk.red('Benchmark failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('optimize-project')
+  .description('Run Slither across a project directory and print normalized findings')
+  .argument('[dir]', 'Project directory (default: cwd)', '.')
+  .option('--slither', 'Force-enable Slither (overrides auto-detect)')
+  .option('--no-slither', 'Force-disable Slither')
+  .option('--output', 'Print JSON to stdout')
+  .action(async (dir, opts) => {
+    try {
+      await optimizeProject(dir, { slither: opts.slither, output: opts.output });
+    } catch (err) {
+      console.error(chalk.red('Project optimization failed:'), err);
       process.exit(1);
     }
   });

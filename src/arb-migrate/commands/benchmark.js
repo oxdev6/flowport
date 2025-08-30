@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';

@@ -2,8 +2,9 @@ import 'dotenv/config';
 import '@nomicfoundation/hardhat-ethers';
 import '@nomicfoundation/hardhat-verify';
 import '@typechain/hardhat';
+import 'hardhat-gas-reporter';
 
-const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY } = process.env;
+const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY, ARBITRUM_ONE_RPC_URL } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 export default {
@@ -31,15 +32,27 @@ export default {
       url: ARB_RPC_URL || 'https://arb-sepolia.g.alchemy.com/v2/YOUR_KEY',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
     }
+    ,
+    arbitrum: {
+      url: ARBITRUM_ONE_RPC_URL || 'https://arb1.arbitrum.io/rpc',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+    }
   },
   etherscan: {
     apiKey: {
-      arbitrumSepolia: ARBISCAN_API_KEY || 'YOUR_ARBISCAN_API_KEY'
+      arbitrumSepolia: ARBISCAN_API_KEY || 'YOUR_ARBISCAN_API_KEY',
+      arbitrum: ARBISCAN_API_KEY || 'YOUR_ARBISCAN_API_KEY'
     }
   },
   typechain: {
     outDir: 'types',
     target: 'ethers-v6'
+  },
+  gasReporter: {
+    enabled: true,
+    currency: 'USD',
+    coinmarketcap: process.env.CMC_API_KEY || undefined,
+    excludeContracts: ['mocks/'],
   }
 };
 
