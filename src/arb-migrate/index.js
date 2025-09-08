@@ -32,6 +32,7 @@ program
         'PRIVATE_KEY=0xYOUR_PRIVATE_KEY',
         'ETH_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY',
         'ARB_RPC_URL=https://arb-sepolia.g.alchemy.com/v2/YOUR_KEY',
+        'ARBITRUM_ONE_RPC_URL=https://arbitrum.llamarpc.com',
         ''
       ].join('\n'));
       console.log(chalk.green('Created .env.example'));
