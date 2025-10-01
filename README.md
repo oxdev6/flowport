@@ -52,6 +52,19 @@ arb-migrate deploy --network arbitrumSepolia
 arb-migrate dashboard --port 3000
 ```
 
+### Environment variables
+
+- **ETH_RPC_URL**: Ethereum L1 RPC URL (used for L1 operations)
+- **SEPOLIA_RPC_URL**: Ethereum Sepolia RPC URL (alias for ETH Sepolia)
+- **ARB_RPC_URL**: Arbitrum Sepolia RPC URL
+- **ARBITRUM_ONE_RPC_URL** or **ARBITRUM_RPC_URL**: Arbitrum One mainnet RPC URL. Example:
+
+```bash
+ARBITRUM_ONE_RPC_URL=https://arbitrum.llamarpc.com
+# or
+ARBITRUM_RPC_URL=https://arbitrum.llamarpc.com
+```
+
 ### Documentation
 
 - Enhanced Milestone 2 Specification: `docs/milestone-2-enhanced-specification.md`

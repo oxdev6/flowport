@@ -4,7 +4,7 @@ import '@nomicfoundation/hardhat-verify';
 import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
 
-const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY, ARBITRUM_ONE_RPC_URL } = process.env;
+const { PRIVATE_KEY, ETH_RPC_URL, ARB_RPC_URL, ARBISCAN_API_KEY, ARBITRUM_ONE_RPC_URL, ARBITRUM_RPC_URL } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 export default {
@@ -34,7 +34,7 @@ export default {
     }
     ,
     arbitrum: {
-      url: ARBITRUM_ONE_RPC_URL || 'https://arb1.arbitrum.io/rpc',
+      url: ARBITRUM_ONE_RPC_URL || ARBITRUM_RPC_URL || 'https://arb1.arbitrum.io/rpc',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
     }
   },
