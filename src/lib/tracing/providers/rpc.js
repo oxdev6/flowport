@@ -24,10 +24,11 @@ export async function getRpcTrace({ chainId, txHash }) {
 }
 
 function pickRpcUrl(chainId) {
-  // Read from env, e.g., ARB_SEPOLIA_RPC and ETH_SEPOLIA_RPC
-  if (String(chainId) === '421614') return process.env.ARB_SEPOLIA_RPC || process.env.ETH_RPC_URL;
-  if (String(chainId) === '11155111') return process.env.ETH_SEPOLIA_RPC || process.env.ETH_RPC_URL;
-  return process.env.ETH_RPC_URL || null;
+  const id = String(chainId);
+  if (id === '421614') return process.env.ARB_RPC_URL || process.env.ARB_SEPOLIA_RPC || process.env.ETH_RPC_URL;
+  if (id === '11155111') return process.env.SEPOLIA_RPC_URL || process.env.ETH_SEPOLIA_RPC || process.env.ETH_RPC_URL;
+  if (id === '42161') return process.env.ARBITRUM_ONE_RPC_URL || process.env.ARBITRUM_RPC_URL || process.env.ARB_RPC_URL;
+  return process.env.ETH_RPC_URL || process.env.ARBITRUM_ONE_RPC_URL || process.env.ARBITRUM_RPC_URL || process.env.ARB_RPC_URL || null;
 }
 
 function flattenCallTracer(root) {
