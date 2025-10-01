@@ -10,6 +10,7 @@ import { optimizeContract } from './commands/optimize.js';
 import { benchmarkContract } from './commands/benchmark.js';
 import { optimizeProject } from './commands/optimizeProject.js';
 import { loadOrbitConfig } from '../utils/orbit.js';
+import { dumpState as dumpStateLib } from '../lib/storage/dump.js';
 
 const program = new Command();
 
@@ -395,6 +396,40 @@ program
     dashboard.on('error', (error) => {
       console.error('Failed to start portal:', error);
     });
+  });
+
+program
+  .command('dump-state')
+  .description('Export full storage for a contract, optionally decoding mappings by provided keys')
+  .requiredOption('--address <addr>', 'Contract address')
+  .option('--rpc <url>', 'RPC URL (defaults to ETH_RPC_URL/ARB_RPC_URL/ARBITRUM_ONE_RPC_URL)')
+  .option('--block <tag>', 'Block tag or number (default: latest)', 'latest')
+  .option('--page-size <n>', 'Max entries per storageRange page (default: 1024)', '1024')
+  .option('--mapping-spec <json>', 'JSON with mapping specs and keys to decode')
+  .option('--out <file>', 'Output JSON file (default: stdout)')
+  .action(async (opts) => {
+    try {
+      const rpc = opts.rpc || process.env.ETH_RPC_URL || process.env.ARB_RPC_URL || process.env.ARBITRUM_ONE_RPC_URL || process.env.ARBITRUM_RPC_URL;
+      if (!rpc) {
+        console.error('Missing RPC URL. Provide --rpc or set ETH_RPC_URL/ARB_RPC_URL/ARBITRUM_ONE_RPC_URL');
+        process.exit(1);
+      }
+      const provider = new (await import('ethers')).ethers.JsonRpcProvider(rpc);
+      const mappingSpec = opts.mappingSpec ? JSON.parse(opts.mappingSpec) : undefined;
+      const pageSize = parseInt(opts.pageSize || '1024', 10);
+      const res = await dumpStateLib({ provider, address: opts.address, blockTag: opts.block, pageSize, mappingSpec });
+      const json = JSON.stringify(res, null, 2);
+      if (opts.out) {
+        const fs = await import('fs');
+        fs.writeFileSync(opts.out, json);
+        console.log('Wrote', opts.out);
+      } else {
+        console.log(json);
+      }
+    } catch (err) {
+      console.error(chalk.red('State dump failed:'), err);
+      process.exit(1);
+    }
   });
 
 program.parse(process.argv);

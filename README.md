@@ -65,6 +65,31 @@ ARBITRUM_ONE_RPC_URL=https://arbitrum.llamarpc.com
 ARBITRUM_RPC_URL=https://arbitrum.llamarpc.com
 ```
 
+### Exporting contract state
+
+You can export a contract's raw storage and optionally decode mappings when you provide keys:
+
+```bash
+# Raw storage (requires a node supporting debug_storageRangeAt; falls back to empty when unavailable)
+arb-migrate dump-state --address 0xYourContract --rpc $ARBITRUM_ONE_RPC_URL --block latest --out ./reports/state.json
+
+# Decode specific mappings (flat)
+arb-migrate dump-state \
+  --address 0xYourContract \
+  --rpc $ARBITRUM_ONE_RPC_URL \
+  --mapping-spec '{"mappings":[{"name":"balances","slot":3,"keyType":"address","keys":["0xabc...","0xdef..."]}]}'
+
+# Decode nested mappings with provided keys
+arb-migrate dump-state \
+  --address 0xYourContract \
+  --rpc $ARBITRUM_ONE_RPC_URL \
+  --mapping-spec '{"mappings":[{"name":"allowance","slot":5,"keyTypes":["address","address"],"keys":[["0xowner", ["0xspender1","0xspender2"]]]}]}'
+```
+
+Notes:
+- EVM mappings are not enumerable; full dumps require you to supply keys or rely on application-level indexes/events. When keys are provided, values are read via computed storage slots.
+- Raw storage export uses `debug_storageRangeAt` when available to page through slots; some public RPCs disable this method.
+
 ### Documentation
 
 - Enhanced Milestone 2 Specification: `docs/milestone-2-enhanced-specification.md`
