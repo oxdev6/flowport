@@ -11,6 +11,7 @@ import { benchmarkContract } from './commands/benchmark.js';
 import { optimizeProject } from './commands/optimizeProject.js';
 import { loadOrbitConfig } from '../utils/orbit.js';
 import { dumpState as dumpStateLib } from '../lib/storage/dump.js';
+import { extractKeysAndMaybeDump } from './commands/extractKeys.js';
 
 const program = new Command();
 
@@ -428,6 +429,52 @@ program
       }
     } catch (err) {
       console.error(chalk.red('State dump failed:'), err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('extract-keys')
+  .description('Infer mapping keys (addresses) from logs and optionally dump state')
+  .requiredOption('--address <addr>', 'Target contract address (for state dump)')
+  .option('--emitter <addr>', 'Event emitter address (defaults to --address)')
+  .option('--rpc <url>', 'RPC URL (defaults to ETH_RPC_URL/ARB_RPC_URL/ARBITRUM_ONE_RPC_URL)')
+  .option('--start-block <n>', 'Start block (default: 0)')
+  .option('--end-block <n|latest>', 'End block (default: latest)', 'latest')
+  .option('--standard <name>', 'Preset: erc20-balances | erc20-allowance | erc721-owners | events-any', 'erc20-balances')
+  .requiredOption('--slot <n>', 'Mapping base slot (e.g., balances slot)')
+  .option('--out-spec <file>', 'Write generated mapping-spec JSON to file')
+  .option('--run-dump', 'Also run dump-state using the generated mapping-spec')
+  .option('--dump-block <tag>', 'Block tag/number for dump-state', 'latest')
+  .option('--page-size <n>', 'Page size for storage dump (default: 1024)', '1024')
+  .action(async (opts) => {
+    try {
+      const rpc = opts.rpc || process.env.ETH_RPC_URL || process.env.ARB_RPC_URL || process.env.ARBITRUM_ONE_RPC_URL || process.env.ARBITRUM_RPC_URL;
+      if (!rpc) {
+        console.error('Missing RPC URL. Provide --rpc or set ETH_RPC_URL/ARB_RPC_URL/ARBITRUM_ONE_RPC_URL');
+        process.exit(1);
+      }
+      const provider = new (await import('ethers')).ethers.JsonRpcProvider(rpc);
+      const res = await extractKeysAndMaybeDump({
+        provider,
+        contractAddress: opts.address,
+        targetAddress: opts.emitter || opts.address,
+        standard: opts.standard,
+        slot: opts.slot,
+        startBlock: opts.startBlock,
+        endBlock: opts.endBlock,
+        outFile: opts.outSpec,
+        runDump: Boolean(opts.runDump),
+        dumpBlock: opts.dumpBlock,
+        pageSize: parseInt(opts.pageSize || '1024', 10)
+      });
+      if (res?.mappingSpec && !opts.outSpec) {
+        console.log(JSON.stringify(res.mappingSpec, null, 2));
+      } else if (res && opts.runDump) {
+        console.log(JSON.stringify(res, null, 2));
+      }
+    } catch (err) {
+      console.error(chalk.red('extract-keys failed:'), err);
       process.exit(1);
     }
   });

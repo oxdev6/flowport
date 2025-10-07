@@ -90,6 +90,38 @@ Notes:
 - EVM mappings are not enumerable; full dumps require you to supply keys or rely on application-level indexes/events. When keys are provided, values are read via computed storage slots.
 - Raw storage export uses `debug_storageRangeAt` when available to page through slots; some public RPCs disable this method.
 
+### Inferring mapping keys from logs (helper)
+
+When you do not have the full set of mapping keys (e.g., ERC20 `balances`), you can derive candidate addresses from on-chain logs, generate a mapping-spec JSON, and optionally run a state dump with it.
+
+```bash
+# Generate keys from Transfer logs and write mapping-spec
+arb-migrate extract-keys \
+  --address 0xYourToken \
+  --rpc $ARBITRUM_ONE_RPC_URL \
+  --standard erc20-balances \
+  --slot 3 \
+  --start-block 0 \
+  --end-block latest \
+  --out-spec ./reports/balances.mapping.json
+
+# Optionally, run dump-state immediately using generated keys
+arb-migrate extract-keys \
+  --address 0xYourToken \
+  --rpc $ARBITRUM_ONE_RPC_URL \
+  --standard erc20-balances \
+  --slot 3 \
+  --run-dump \
+  --dump-block latest \
+  --page-size 1024 \
+  --out-spec ./reports/balances.mapping.json > ./reports/state-with-balances.json
+```
+
+Options:
+- `--standard`: `erc20-balances` (default), `erc20-allowance`, `erc721-owners`, or `events-any` (collect indexed addresses from all events).
+- `--emitter`: if events are emitted by a proxy/other address, set this; defaults to `--address`.
+- `--slot`: base storage slot for the mapping (required).
+
 ### Documentation
 
 - Enhanced Milestone 2 Specification: `docs/milestone-2-enhanced-specification.md`
